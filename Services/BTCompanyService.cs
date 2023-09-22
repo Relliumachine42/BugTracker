@@ -13,9 +13,28 @@ namespace BugTracker.Services
             _context = context;
         }
 
-        public Task<Company> GetCompanyInfoAsync(int? companyId)
+        public async Task<Company> GetCompanyInfoAsync(int? companyId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Company? company = new();
+
+                if(companyId != null)
+                {
+                    company = await _context.Companies
+                                            .Include(c => c.Projects)
+                                            .Include(c => c.Invites)
+                                            .Include(c => c.Members)
+                                            .FirstOrDefaultAsync(c => c.Id == companyId);
+                }
+
+                return company!;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         public Task<List<Invite>> GetInvitesAsync(int? companyId)

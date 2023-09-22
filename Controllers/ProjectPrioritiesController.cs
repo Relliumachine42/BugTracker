@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace BugTracker.Controllers
 {
     [Authorize]
-    public class ProjectPrioritiesController : Controller
+    public class ProjectPrioritiesController : BTBaseController
     {
         private readonly ApplicationDbContext _context;
 

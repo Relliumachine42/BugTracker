@@ -201,11 +201,16 @@ namespace BugTracker.Controllers
 
         // GET: Projects/Create
         // [Authorize(Policy = "Admin|PM")]     ----> same as [Authorize(Roles="Admin, ProjectManager")]
-		[Authorize(Roles = "Admin")]
-		public IActionResult Create()
+		[Authorize(Roles = "Admin, ProjectManager")]
+		public async Task<IActionResult> Create()
         {
-            ViewData["ProjectPriority"] = new SelectList(Enum.GetValues(typeof(BTProjectPriorities)).Cast<BTProjectPriorities>());
+            //ViewData["ProjectPriority"] = new SelectList(Enum.GetValues(typeof(BTProjectPriorities)).Cast<BTProjectPriorities>());
+            //ViewData["ProjectPriorityId"] = new SelectList(_context.ProjectPriorities, "Id", "Name");
+
+            ViewData["ProjectPriorityId"] = new SelectList((await _projectService.GetProjectPrioritiesAsync()), "Id", "Name");
+
             return View(new Project() { StartDate = DateTime.Now, EndDate = DateTime.Now });
+
         }
 
         // POST: Projects/Create
@@ -228,14 +233,13 @@ namespace BugTracker.Controllers
                     project.ImageType = project.ImageFile.ContentType;
                 }
 
-                _context.Add(project);
-                await _context.SaveChangesAsync();
+                await _projectService.AddProjectAsync(project);
 
                 return RedirectToAction(nameof(Index));
             }
 
 
-            ViewData["ProjectPriorityId"] = new SelectList(_context.ProjectPriorities, "Id", "Id", project.ProjectPriorityId);
+            ViewData["ProjectPriorityId"] = new SelectList(_context.ProjectPriorities, "Id", "Name", project.ProjectPriorityId);
 
             return View(project);
         }

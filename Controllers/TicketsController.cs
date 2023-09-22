@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity;
 using BugTracker.Models.Enums;
 using BugTracker.Services;
 using System.IO;
+using BugTracker.Extensions;
 
 namespace BugTracker.Controllers
 {
@@ -26,9 +27,11 @@ namespace BugTracker.Controllers
         private readonly IBTTicketService _ticketService;
         private readonly IBTFileService _fileService;
         private readonly UserManager<BTUser> _userManager;
+        private readonly IBTTicketHistoryService _historyService;
+        private readonly IBTNotificationService _notificationService;
 
 
-        public TicketsController(ApplicationDbContext context, IBTProjectService projectService, IBTRolesService rolesService, IBTTicketService ticketService, IBTFileService fileService, UserManager<BTUser> userManager)
+        public TicketsController(ApplicationDbContext context, IBTProjectService projectService, IBTRolesService rolesService, IBTTicketService ticketService, IBTFileService fileService, UserManager<BTUser> userManager, IBTTicketHistoryService historyService, IBTNotificationService notificationService)
         {
             _context = context;
             _projectService = projectService;
@@ -36,6 +39,8 @@ namespace BugTracker.Controllers
             _ticketService = ticketService;
             _fileService = fileService;
             _userManager = userManager;
+            _historyService = historyService;
+            _notificationService = notificationService;
         }
 
         // GET: Tickets
@@ -69,8 +74,13 @@ namespace BugTracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AssignTicket(AssignTicketViewModel viewModel)
         {
+            string? currentUserId = _userManager.GetUserId(User);
+
             if (viewModel.DeveloperId != null && viewModel.Ticket?.Id != null)
             {
+
+                Ticket? oldTicket = await _ticketService.GetTicketAsNoTrackingAsync(viewModel.Ticket?.Id, _companyId);
+
                 try
                 {
                     await _ticketService.AssignTicketAsync(viewModel.Ticket?.Id, viewModel.DeveloperId);
@@ -82,9 +92,12 @@ namespace BugTracker.Controllers
                 }
 
                 //TODO: Add History
+                Ticket? newTicket = await _ticketService.GetTicketAsNoTrackingAsync(viewModel.Ticket?.Id, _companyId);
+                await _historyService.AddHistoryAsync(oldTicket, newTicket, currentUserId);
+
 
                 //TODO: Add Notification
-
+                await _notificationService.NewDeveloperNotificationAsync(viewModel.Ticket?.Id, viewModel.DeveloperId, currentUserId);
             }
 
             return View();
@@ -135,10 +148,23 @@ namespace BugTracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Description,Created,Updated,Archived,ArchivedByProject,ProjectId,TicketTypeId,TicketStatusId,TicketPriorityId,DeveloperUserId,SubmitterUserId")] Ticket ticket)
         {
+            string? currentUserId = _userManager.GetUserId(User);
+            ModelState.Remove("SubmitterUserId");
+
             if (ModelState.IsValid)
             {
                 _context.Add(ticket);
                 await _context.SaveChangesAsync();
+
+                await _ticketService.AddTicketAsync(ticket);
+
+                int companyId = User.Identity!.GetCompanyId();
+                Ticket newTicket = await _ticketService.GetTicketAsNoTrackingAsync(ticket.Id, companyId);
+
+                await _historyService.AddHistoryAsync(null!, newTicket, currentUserId);
+
+                await _notificationService.NewTicketNotificationAsync(ticket.Id, currentUserId);
+
                 return RedirectToAction(nameof(Index));
             }
             ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.DeveloperUserId);
@@ -186,10 +212,14 @@ namespace BugTracker.Controllers
 
             if (ModelState.IsValid)
             {
+                    Ticket? oldTicket = await _ticketService.GetTicketAsNoTrackingAsync(ticket.Id, _companyId);
+
                 try
                 {
                     _context.Update(ticket);
                     await _context.SaveChangesAsync();
+
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -202,6 +232,10 @@ namespace BugTracker.Controllers
                         throw;
                     }
                 }
+
+                Ticket? newTicket = await _ticketService.GetTicketAsNoTrackingAsync(ticket.Id, _companyId);
+                await _historyService.AddHistoryAsync(oldTicket, newTicket, _userManager.GetUserId(User));
+
                 return RedirectToAction(nameof(Index));
             }
             ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.DeveloperUserId);

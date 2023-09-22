@@ -3,6 +3,7 @@ using BugTracker.Models;
 using BugTracker.Models.Enums;
 using BugTracker.Services.Interfaces;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace BugTracker.Services
@@ -84,9 +85,19 @@ namespace BugTracker.Services
             }
         }
 
-        public Task AddProjectAsync(Project project)
+        public async Task AddProjectAsync(Project project)
         {
-            throw new NotImplementedException();
+            try
+            {
+				_context.Add(project);
+				await _context.SaveChangesAsync();
+
+			}
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         public async Task<bool> AddProjectManagerAsync(string? userId, int? projectId)
@@ -252,9 +263,23 @@ namespace BugTracker.Services
             }
         }
 
-        public Task<IEnumerable<ProjectPriority>> GetProjectPrioritiesAsync()
+        public async Task<IEnumerable<ProjectPriority>> GetProjectPrioritiesAsync()
         {
-            throw new NotImplementedException();
+            try
+            {
+                IEnumerable<ProjectPriority> projectPriorities = new List<ProjectPriority>();
+
+
+                projectPriorities = await _context.ProjectPriorities.ToListAsync();
+
+                return projectPriorities;
+
+			}
+			catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         public Task<List<Project>?> GetUserProjectsAsync(string? userId)
