@@ -56,6 +56,25 @@ else
     app.UseHsts();
 }
 
+app.Use(async (context, next) =>
+{
+
+    switch (context.Response.StatusCode)
+    {
+        case 404:
+            context.Request.Path = "/Home/Bug404";
+            await next();
+            break;
+        case 500:
+            context.Request.Path = "/Home/Bug500";
+            await next();
+            break;
+        default:
+            await next();
+            break;
+    }
+});
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
@@ -65,7 +84,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Home}/{action=Landing}/{id?}");
 app.MapRazorPages();
 
 app.Run();

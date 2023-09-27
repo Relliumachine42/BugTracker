@@ -24,5 +24,6 @@ namespace BugTracker.Services.Interfaces
         public Task<bool> RemoveMemberFromProjectAsync(BTUser? member, int? projectId);
         public Task RestoreProjectAsync(Project? project, int? companyId);
         public Task UpdateProjectAsync(Project? project);
+        public IEnumerable<Project> SearchProjects(string? searchString);
     }
 }

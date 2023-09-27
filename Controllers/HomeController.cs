@@ -1,4 +1,5 @@
 ﻿using BugTracker.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -12,7 +13,10 @@ namespace BugTracker.Controllers
         {
             _logger = logger;
         }
-
+        public IActionResult Landing()
+        { 
+            return View(); 
+        }
         public IActionResult Index()
         {
             return View();
@@ -23,6 +27,16 @@ namespace BugTracker.Controllers
         }
 
         public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        public IActionResult Bug404()
+        {
+            return View();
+        }
+
+        public IActionResult Bug500()
         {
             return View();
         }

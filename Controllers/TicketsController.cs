@@ -52,6 +52,7 @@ namespace BugTracker.Controllers
 
         }
 
+
         [HttpGet]
         public async Task<IActionResult> AssignTicket(int? id)
         {

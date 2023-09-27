@@ -389,5 +389,37 @@ namespace BugTracker.Services
                 throw;
             }
         }
+
+        public IEnumerable<Project> SearchProjects(string? searchString)
+        {
+            try
+            {
+                IEnumerable<Project> projects = new List<Project>();
+
+                if (string.IsNullOrEmpty(searchString))
+                {
+                    return projects;
+                }
+                else
+                {
+                    searchString = searchString.Trim().ToLower();
+
+                    projects = _context.Projects.Where(p => p.Name!.ToLower().Contains(searchString) ||
+                                                        p.Description!.ToLower().Contains(searchString) ||
+                                                        p.Archived == false)
+                                                         .AsNoTracking();
+                    return projects;
+
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+
+
     }
 }

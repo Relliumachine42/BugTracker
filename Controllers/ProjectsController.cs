@@ -52,7 +52,21 @@ namespace BugTracker.Controllers
 
         }
 
+        public async Task<IActionResult> SearchIndex(string? searchString, int? pageNum)
+        {
+            int pageSize = 3;
+            int page = pageNum ?? 1;
+
+            IPagedList<Project> projects = await _projectService.SearchProjects(searchString).ToPagedListAsync(page, pageSize);
+
+            ViewData["ActionName"] = nameof(SearchIndex);
+            ViewData["SearchString"] = searchString;
+
+            return View(nameof(Index), projects);
+        }
+
         // GET: Projects/AssignPM
+        [Authorize(Roles = "Admin, ProjectManager")]
         [HttpGet]
         public async Task<IActionResult> AssignPM(int? id)
         {
@@ -84,6 +98,7 @@ namespace BugTracker.Controllers
         }
 
         // POST: Projects/AssignPM
+        [Authorize(Roles = "Admin, ProjectManager")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AssignPM(AssignPMViewModel viewModel)
@@ -113,6 +128,7 @@ namespace BugTracker.Controllers
 
         }
 
+        [Authorize(Roles = "Admin, ProjectManager")]
         [HttpGet]
         public async Task<IActionResult> AssignProjectMembers(int? id)
         { 
@@ -143,6 +159,7 @@ namespace BugTracker.Controllers
             return View(viewModel);
         }
 
+        [Authorize(Roles = "Admin, ProjectManager")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AssignProjectMembers(ProjectMembersViewModel viewModel)
@@ -176,7 +193,6 @@ namespace BugTracker.Controllers
 
 
         // GET: Projects/Details/5
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int? Id)
         {
             if (Id == null)
@@ -217,6 +233,7 @@ namespace BugTracker.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize(Roles = "Admin, ProjectManager")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Description,StartDate,EndDate,ProjectPriorityId,Archived,ImageFile")] Project project)
         {
@@ -245,6 +262,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: Projects/Edit/5
+        [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Projects == null)
@@ -265,6 +283,7 @@ namespace BugTracker.Controllers
         // POST: Projects/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin, ProjectManager")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,CompanyId,Name,Description,Created,StartDate,EndDate,ProjectPriorityId,Archived,ImageData,ImageType")] Project project)
@@ -300,7 +319,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: Projects/Delete/5
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Projects == null)
@@ -322,9 +341,9 @@ namespace BugTracker.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-		// GET: Projects/Undelete/5
-		[Authorize(Roles = "Admin")]
-		public async Task<IActionResult> Undelete(int? id)
+        // GET: Projects/Undelete/5
+        [Authorize(Roles = "Admin, ProjectManager")]
+        public async Task<IActionResult> Undelete(int? id)
 		{
 			if (id == null || _context.Projects == null)
 			{

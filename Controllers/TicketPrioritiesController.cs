@@ -48,6 +48,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: TicketPriorities/Create
+        [Authorize(Roles = "Admin, ProjectManager")]
         public IActionResult Create()
         {
             return View();
@@ -56,6 +57,7 @@ namespace BugTracker.Controllers
         // POST: TicketPriorities/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin, ProjectManager")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name")] TicketPriority ticketPriority)
@@ -70,6 +72,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: TicketPriorities/Edit/5
+        [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.TicketPriorities == null)
@@ -88,6 +91,7 @@ namespace BugTracker.Controllers
         // POST: TicketPriorities/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin, ProjectManager")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] TicketPriority ticketPriority)
@@ -121,6 +125,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: TicketPriorities/Delete/5
+        [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.TicketPriorities == null)
@@ -139,6 +144,7 @@ namespace BugTracker.Controllers
         }
 
         // POST: TicketPriorities/Delete/5
+        [Authorize(Roles = "Admin, ProjectManager")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
