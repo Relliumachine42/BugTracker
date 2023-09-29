@@ -228,17 +228,17 @@
 
             <!-- LOGO -->
             <div class="logo-box">
-                <a href="index.html" class="logo logo-light text-center">
+                <a asp-controller="Home" asp-action="Index" class="logo logo-light text-center">
                     <span class="logo-sm">
-                        <img src="~/img/TrackerBarrelLogo.png" alt="" height="100">
+                        <img src="~/img/TrackerBarrelLogo.png" alt="" height="40">
                     </span>
                     <span class="logo-lg">
                         <img src="~/img/TrackerBarrelLogo.png" alt="" height="100">
                     </span>
                 </a>
-                <a href="index.html" class="logo logo-dark text-center">
+                <a asp-controller="Home" asp-action="Index" class="logo logo-dark text-center">
                     <span class="logo-sm">
-                        <img src="~/img/TrackerBarrelLogo.png" alt="" height="100">
+                        <img src="~/img/TrackerBarrelLogo.png" alt="" height="40">
                     </span>
                     <span class="logo-lg">
                         <img src="~/img/TrackerBarrelLogo.png" alt="" height="100">
@@ -247,11 +247,11 @@
             </div>
 
             <ul class="list-unstyled topnav-menu topnav-menu-left mb-0">
-                <li>
+@*                 <li>
                     <button class="button-menu-mobile disable-btn waves-effect">
                         <i class="fe-menu"></i>
                     </button>
-                </li>
+                </li> *@
 
                 <li>
                     <h4 class="page-title-main">Dashboard</h4>
@@ -324,7 +324,7 @@
                         <li class="menu-title">Navigation</li>
 
                         <li>
-                            <a asp-route="default">
+                            <a asp-controller="Home" asp-action="Index">
                                 <i class="mdi mdi-view-dashboard-outline"></i>
                                 <span class="badge bg-success rounded-pill float-end">9+</span>
                                 <span> Dashboard </span>

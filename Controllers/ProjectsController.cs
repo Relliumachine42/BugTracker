@@ -223,7 +223,7 @@ namespace BugTracker.Controllers
             //ViewData["ProjectPriority"] = new SelectList(Enum.GetValues(typeof(BTProjectPriorities)).Cast<BTProjectPriorities>());
             //ViewData["ProjectPriorityId"] = new SelectList(_context.ProjectPriorities, "Id", "Name");
 
-            ViewData["ProjectPriorityId"] = new SelectList((await _projectService.GetProjectPrioritiesAsync()), "Id", "Name");
+            ViewData["ProjectPriority"] = new SelectList((await _projectService.GetProjectPrioritiesAsync()), "Id", "Name");
 
             return View(new Project() { StartDate = DateTime.Now, EndDate = DateTime.Now });
 

@@ -1,0 +1,53 @@
+﻿@model Project
+@inject IBTFileService _fileService
+@inject IBTProjectService _projectService
+
+<tr>
+    <td>
+        @Model.Name
+    </td>
+    <td>
+        @Model.Description
+    </td>
+    <td>
+        @Model.StartDate
+    </td>
+    <td>
+        @Model.EndDate
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => Model.Archived)
+    </td>
+    <td>
+        <img src="@_fileService.ConvertByteArrayToFile(Model.ImageData,Model.ImageType,DefaultImage.ProjectImage)" height="100" alt="Project Image" />
+    </td>
+    <td>
+        @Model.ProjectPriority.Name
+    </td>
+    <td>
+        <div class="content-block post-list-view mt--30 h-100">
+            <div class="post-content d-flex flex-column gap-1 align-items-center">
+
+                    <a class="w-75 btn btn-outline-success" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+                    <a class="w-75 btn btn-outline-warning" asp-action="Details" asp-route-id="@Model.Id">Details</a>
+
+                    @if (await _projectService.GetProjectManagerAsync(Model.Id) == null)
+                    {
+                        <a class="w-75 btn btn-outline-warning" asp-action="AssignPM" asp-route-id="@Model.Id">Assign PM</a>
+                    }
+                    else
+                    {
+                        <a class="w-75 btn btn-outline-warning" asp-action="AssignPM" asp-route-id="@Model.Id">Manage PM</a>
+                    }
+                    @if (Model.Archived == false)
+                    {
+                        <a class="w-75 btn btn-outline-danger" asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
+                    }
+                    else
+                    {
+                        <a class="w-75 btn btn-outline-danger" asp-action="Undelete" asp-route-id="@Model.Id">Undelete</a>
+                    }
+            </div>
+        </div>
+    </td>
+</tr>

@@ -20,9 +20,6 @@
                 @Html.DisplayNameFor(model => model.Description)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Created)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.StartDate)
             </th>
             <th>
@@ -32,13 +29,7 @@
                 @Html.DisplayNameFor(model => model.Archived)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ImageData)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ImageType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Company)
+                @Html.DisplayNameFor(model => model.ImageFile)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.ProjectPriority)
@@ -47,61 +38,9 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (Project project in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Description)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Created)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.StartDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.EndDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Archived)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ImageData)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ImageType)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Company.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ProjectPriority.Id)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-
-                    @if (await _projectService.GetProjectManagerAsync(item.Id) == null)
-                    {                       
-                        <a asp-action="AssignPM" asp-route-id="@item.Id">Assign PM</a> <span>|</span>
-                    }
-                    else
-                    {
-                        <a asp-action="AssignPM" asp-route-id="@item.Id">Manage PM</a> <span>|</span>
-                    }
-                    @if (item.Archived == false)
-                    {
-                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                    } 
-                    else
-                    {
-                        <a asp-action="Undelete" asp-route-id="@item.Id">Undelete</a>
-                    }
-                </td>
-            </tr>
+            <partial name="_ProjectPartial" model="project" />
         }
     </tbody>
 </table>

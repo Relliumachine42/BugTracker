@@ -9,7 +9,7 @@ namespace BugTracker.Services
         private readonly string[] suffixes = { "Bytes", "KB", "MB", "GB", "TB", "PB" };
         private readonly string _defaultBTUserImageSrc = "/img/DefaultUserImage.png";
         private readonly string _defaultCompanyImageSrc = "/img/DefaultCompanyImage.png";
-        private readonly string _defaultProjectImageSrc = "/img/DefaultProjectImage.png";
+        private readonly string _defaultProjectImageSrc = "/img/projectdefault.jpg";
         #endregion
 
         #region Convert Byte Array to File
