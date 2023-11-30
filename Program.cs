@@ -4,8 +4,8 @@ using BugTracker.Models;
 using BugTracker.Services;
 using BugTracker.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,8 +32,11 @@ builder.Services.AddScoped<IBTTicketService, BTTicketService>();
 builder.Services.AddScoped<IBTInviteService, BTInviteService>();
 builder.Services.AddScoped<IBTNotificationService, BTNotificationService>();
 builder.Services.AddScoped<IBTTicketHistoryService, BTTicketHistoryService>();
+builder.Services.AddScoped<IEmailSender, EmailService>();
 
 
+//bind the email settings to the EmailSettings object
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
 
 builder.Services.AddMvc();

@@ -47,6 +47,10 @@
 								<li><strong>Priority:</strong> <span class=""> @Model.TicketPriority?.Name</span></li>
 								@*Ticket status*@
 								<li><strong>Status:</strong> <span class=""> @Model.TicketStatus?.Name</span></li>
+								@if (Model.Archived == true || Model.ArchivedByProject == true)
+								{
+									<p class="text-danger font-13 text-center"><strong>Archived</strong></p>
+								}
 							</ul>
 						</div>
 					</div>

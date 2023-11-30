@@ -17,10 +17,12 @@ namespace BugTracker.Controllers
         { 
             return View(); 
         }
+        [Authorize]
         public IActionResult Index()
         {
             return View();
         }
+        [Authorize]
         public IActionResult AdmintoIndex()
         {
             return View();

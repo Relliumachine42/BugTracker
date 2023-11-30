@@ -41,7 +41,7 @@ namespace BugTracker.Controllers
         // GET: Projects
         public async Task<IActionResult> Index(int? pageNum)
         {
-            int pageSize = 3;
+            int pageSize = 9;
             int page = pageNum ?? 1;
 
             IPagedList<Project> projects = await (await _projectService.GetAllProjectsByCompanyIdAsync(_companyId)).ToPagedListAsync(page, pageSize);
@@ -235,7 +235,7 @@ namespace BugTracker.Controllers
         [HttpPost]
         [Authorize(Roles = "Admin, ProjectManager")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,StartDate,EndDate,ProjectPriorityId,Archived,ImageFile")] Project project)
+        public async Task<IActionResult> Create([Bind("Name,Description,StartDate,EndDate,ProjectPriorityId,Archived,ImageFile")] Project project)
         {
             ModelState.Remove("CompanyId");
 
@@ -338,6 +338,12 @@ namespace BugTracker.Controllers
 
             await _projectService.UpdateProjectAsync(project);
 
+            foreach (Ticket ticket in project.Tickets)
+            {
+                ticket.ArchivedByProject = true;
+                await _ticketService.UpdateTicketAsync(ticket);
+            }
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -360,6 +366,12 @@ namespace BugTracker.Controllers
 			project.Archived = false;
 
 			await _projectService.UpdateProjectAsync(project);
+
+			foreach (Ticket ticket in project.Tickets)
+			{
+				ticket.ArchivedByProject = false;
+				await _ticketService.UpdateTicketAsync(ticket);
+			}
 
 			return RedirectToAction(nameof(Index));
 		}
