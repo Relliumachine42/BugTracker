@@ -267,8 +267,8 @@
                 <div class="col-lg-6">
                     <div class="title text-center mb-5">
                         <h6 class="text-primary small-title">Contact</h6>
-                        <h4>Have any Questions ?</h4>
-                        <p class="text-muted">At solmen va esser far uniform grammatica.</p>
+                        <h4>Have any Questions?</h4>
+                        <p class="text-muted">Email the developer</p>
                     </div>
                 </div>
             </div>
@@ -277,8 +277,8 @@
             <div class="row">
                 <div class="col-lg-4">
                     <div class="get-in-touch">
-                        <h5>Get in touch</h5>
-                        <p class="text-muted mb-5">At solmen va esser necessi far</p>
+                        <h5>Glenn Schwartz</h5>
+                        <p class="text-muted mb-5">Software Developer</p>
 
                         <div class="mb-3">
                             <div class="get-touch-icon float-start me-3">
@@ -286,7 +286,7 @@
                             </div>
                             <div class="overflow-hidden">
                                 <h5 class="font-16 mb-0">E-mail</h5>
-                                <p class="text-muted">example@abc.com</p>
+                                <p class="text-muted">glennschwartz42@gmail.com</p>
                             </div>
                         </div>
                         <div class="mb-3">
@@ -295,7 +295,7 @@
                             </div>
                             <div class="overflow-hidden">
                                 <h5 class="font-16 mb-0">Phone</h5>
-                                <p class="text-muted">012-345-6789</p>
+                                <p class="text-muted">(919) 265-4223</p>
                             </div>
                         </div>
                         <div class="mb-2">
@@ -303,8 +303,8 @@
                                 <h2> <i class="pe-7s-map-marker text-primary"></i></h2>
                             </div>
                             <div class="overflow-hidden">
-                                <h5 class="font-16 mb-0">Address</h5>
-                                <p class="text-muted">20 Rollins Road Cotesfield, NE 68829</p>
+                                <h5 class="font-16 mb-0">Location</h5>
+                                <p class="text-muted">North Carolina</p>
                             </div>
                         </div>
                     </div>
@@ -312,28 +312,18 @@
                 <div class="col-lg-8">
                     <div class="custom-form bg-white">
                         <span id="error-msg"></span>
-                        <form method="post" name="myForm" onsubmit="return validateForm()">
+                        <form method="post" asp-action="ContactMe">
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
                                         <label for="name" class="form-label">Name</label>
-                                        <input name="name" id="name" type="text" class="form-control" placeholder="Enter your name...">
+                                        <input name="name" id="name" type="text" class="form-control" placeholder="Enter your name..." required>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="mb-3">
                                         <label for="email" class="form-label">Email address</label>
-                                        <input name="email" id="email" type="email" class="form-control" placeholder="Enter your email...">
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- end row -->
-
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <div class="mb-3">
-                                        <label for="subject" class="form-label">Subject</label>
-                                        <input name="subject" id="subject" type="text" class="form-control" placeholder="Enter Subject...">
+                                        <input name="email" id="email" type="email" class="form-control" placeholder="Enter your email..." required>
                                     </div>
                                 </div>
                             </div>
@@ -343,7 +333,7 @@
                                 <div class="col-lg-12">
                                     <div class="mb-3">
                                         <label for="comments" class="form-label">Message</label>
-                                        <textarea name="comments" id="comments" rows="4" class="form-control" placeholder="Enter your message..."></textarea>
+                                        <textarea name="comments" id="comments" rows="4" class="form-control" placeholder="Enter your message..." required></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -372,24 +362,18 @@
             <div class="row">
                 <div class="col-xl-12">
                     <div class="text-center">
-                        <div class="footer-logo mb-3">
-                            <img src="images/logo-light.png" alt="" height="20">
+                        <div class="footer-logo">
+                            <a href="#">
+                            <img src="~/img/TrackerBarrelLogoAlt.png" alt="" height="100">
+                            </a>
                         </div>
-                        <ul class="list-inline footer-list text-center mt-5">
-                            <li class="list-inline-item"><a href="#">Home</a></li>
-                            <li class="list-inline-item"><a href="#">About</a></li>
-                            <li class="list-inline-item"><a href="#">Services</a></li>
-                            <li class="list-inline-item"><a href="#">Clients</a></li>
-                            <li class="list-inline-item"><a href="#">Pricing</a></li>
-                            <li class="list-inline-item"><a href="#">Contact</a></li>
+                        <ul class="list-inline social-links mb-4 mt-2">
+                            <li class="list-inline-item"><a href="https://www.linkedin.com/in/glenn-schwartz/"><i class="mdi mdi-linkedin"></i></a></li>
+                            <li class="list-inline-item"><a href="https://github.com/Relliumachine42"><i class="mdi mdi-git"></i></a></li>
+                            <li class="list-inline-item"><a href="mailto:glennschwartz42@gmail.com"><i class="mdi mdi-email"></i></a></li>
+                            <li class="list-inline-item"><a href="https://schwartz-portfolio.netlify.app/"><i class="mdi mdi-link"></i></a></li>
                         </ul>
-                        <ul class="list-inline social-links mb-4 mt-5">
-                            <li class="list-inline-item"><a href="#"><i class="mdi mdi-facebook"></i></a></li>
-                            <li class="list-inline-item"><a href="#"><i class="mdi mdi-twitter"></i></a></li>
-                            <li class="list-inline-item"><a href="#"><i class="mdi mdi-instagram"></i></a></li>
-                            <li class="list-inline-item"><a href="#"><i class="mdi mdi-google-plus"></i></a></li>
-                        </ul>
-                        <p class="text-white-50 mb-4">2016 - 2020 © Adminto. Design by <a href="#" target="_blank" class="text-white-50">Coderthemes</a> </p>
+                        <p class="text-white-50 mb-4">2023 © Glenn Schwartz</p>
 
                     </div>
                 </div>
@@ -408,6 +392,29 @@
     <script src="~/adminto/Landing/js/counter.int.js"></script>
     <!-- custom js -->
     <script src="~/adminto/Landing/js/app.js"></script>
+    <!--Sweet Alerts-->
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        let message = '@(ViewBag.SwalMessage)';
+        if (!message.includes("Error") && message != '') {
+            Swal.fire({
+                backdrop: false,
+                icon: 'success',
+                title: message,
+                showConfirmButton: true
+            });
+        } else if (message.includes("Error")) {
+            Swal.fire({
+                backdrop: false,
+                icon: 'error',
+                title: 'Oops...',
+                text: message
+            });
+        }
+    </script>
+    <!--End Sweet Alerts-->
+
 </body>
 
 </html>
