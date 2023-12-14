@@ -1,4 +1,5 @@
 ﻿@model BugTracker.Models.Company
+@inject IBTFileService _fileService
 
 @{
     ViewData["Title"] = "Edit";
@@ -8,42 +9,43 @@
 
 <h4>Company</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ImageData" class="control-label"></label>
-                <input asp-for="ImageData" class="form-control" />
-                <span asp-validation-for="ImageData" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ImageType" class="control-label"></label>
-                <input asp-for="ImageType" class="form-control" />
-                <span asp-validation-for="ImageType" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+<div class="row g-3 p-2">
+    <div class="col-12 col-lg-6">
+        <div class="p-3 border border-2 shadow-lg bg-light">
+            <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="ImageData" />
+                <input type="hidden" asp-for="ImageType" />
+                <div class="square-img-container text-center">
+                    <img id="contactImage" class="square-img avatar-xl rounded mb-2" src="@_fileService.ConvertByteArrayToFile(Model?.ImageData, Model?.ImageType, DefaultImage.CompanyImage)">
+                </div>
+                <div>
+                    <input asp-for="ImageFile" class="form-control" accept=".png,.jpg,.jpeg,.gif" onchange="document.getElementById('contactImage').src= window.URL.createObjectURL(this.files[0])" />
+                    <span asp-validation-for="ImageFile" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Description" class="control-label"></label>
+                    <input asp-for="Description" class="form-control" />
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-2">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

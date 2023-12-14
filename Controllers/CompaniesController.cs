@@ -21,16 +21,19 @@ namespace BugTracker.Controllers
         private readonly IBTCompanyService _companyService;
         private readonly UserManager<BTUser> _userManager;
         private readonly IBTRolesService _rolesService;
+        private readonly IBTFileService _fileService;
 
         public CompaniesController(ApplicationDbContext context,
                                     IBTCompanyService companyService,
                                     UserManager<BTUser> userManager,
-                                    IBTRolesService rolesService)
+                                    IBTRolesService rolesService,
+                                    IBTFileService fileService)
         {
             _context = context;
             _companyService = companyService;
             _userManager = userManager;
             _rolesService = rolesService;
+            _fileService = fileService;
         }
 
         // GET: Companies
@@ -61,7 +64,7 @@ namespace BugTracker.Controllers
             //      - viewmodel to model
             string? btUserId = _userManager.GetUserId(User);
 
-            foreach(BTUser member in members)
+            foreach (BTUser member in members)
             {
                 if (string.Compare(btUserId, member.Id) != 0)
                 {
@@ -157,7 +160,7 @@ namespace BugTracker.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Companies == null)
+            if (id == null || _context.Companies == null || _companyId != id)
             {
                 return NotFound();
             }
@@ -176,7 +179,7 @@ namespace BugTracker.Controllers
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int? id, [Bind("Id,Name,Description,ImageData,ImageType")] Company company)
+        public async Task<IActionResult> Edit(int? id, [Bind("Id,Name,Description,ImageData,ImageType,ImageFile")] Company company)
         {
             if (id != company.Id)
             {
@@ -187,6 +190,12 @@ namespace BugTracker.Controllers
             {
                 try
                 {
+                    if(company.ImageFile != null)
+                    {
+                        company.ImageData = await _fileService.ConvertFileToByteArrayAsync(company.ImageFile);
+                        company.ImageType = company.ImageFile.ContentType;
+                    }
+
                     _context.Update(company);
                     await _context.SaveChangesAsync();
                 }
@@ -201,7 +210,7 @@ namespace BugTracker.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), "Home");
             }
             return View(company);
         }
