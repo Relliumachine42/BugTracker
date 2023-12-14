@@ -44,7 +44,7 @@
         <div class="navbar-custom">
             <ul class="list-unstyled topnav-menu float-end mb-0">
 
-                <li class="d-none d-lg-block">
+  @*               <li class="d-none d-lg-block">
                     <form class="app-search">
                         <div class="app-search-box">
                             <div class="input-group">
@@ -126,7 +126,7 @@
                     <a class="nav-link dropdown-toggle waves-effect waves-light" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                         <i class="fe-bell noti-icon"></i>
                         <span class="badge bg-danger rounded-circle noti-icon-badge"></span>
-                        @* @(await _notificationService.GetNotificationsByUserIdAsync(bTUser.Id)).Count *@
+                         @(await _notificationService.GetNotificationsByUserIdAsync(bTUser.Id)).Count
                     </a>
                     <div class="dropdown-menu dropdown-menu-end dropdown-lg">
 
@@ -175,7 +175,7 @@
                         </a>
 
                     </div>
-                </li>
+                </li> *@
 
                 <li class="dropdown notification-list topbar-dropdown">
                     <a class="nav-link dropdown-toggle nav-user me-0 waves-effect waves-light" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
@@ -822,7 +822,7 @@
                         <div class="col-md-6">
                             <div class="text-md-end footer-links d-none d-sm-block">
                                 <a href="https://schwartz-portfolio.netlify.app/">About</a>
-                                <a href="mailto:glennschwartz42@gmail.com">Contact Me</a>
+                                <a href="~/Home/Landing#contact">Contact Me</a>
                             </div>
                         </div>
                     </div>

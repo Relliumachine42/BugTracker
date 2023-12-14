@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 using X.PagedList;
 using BugTracker.Models.Enums;
 using BugTracker.Models.ViewModels;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace BugTracker.Controllers
 {
@@ -276,7 +277,7 @@ namespace BugTracker.Controllers
                 return NotFound();
             }
             ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name", project.CompanyId);
-            ViewData["ProjectPriorityId"] = new SelectList(_context.ProjectPriorities, "Id", "Id", project.ProjectPriorityId);
+            ViewData["ProjectPriorityId"] = new SelectList(_context.ProjectPriorities, "Id", "Name", project.ProjectPriorityId);
             return View(project);
         }
 
@@ -286,7 +287,7 @@ namespace BugTracker.Controllers
         [Authorize(Roles = "Admin, ProjectManager")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,CompanyId,Name,Description,Created,StartDate,EndDate,ProjectPriorityId,Archived,ImageData,ImageType")] Project project)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,CompanyId,Name,Description,Created,StartDate,EndDate,ProjectPriorityId,Archived,ImageData,ImageType,ImageFile")] Project project)
         {
             if (id != project.Id)
             {
@@ -297,6 +298,12 @@ namespace BugTracker.Controllers
             {
                 try
                 {
+                    if (project.ImageFile != null)
+                    {
+                        project.ImageData = await _fileService.ConvertFileToByteArrayAsync(project.ImageFile);
+                        project.ImageType = project.ImageFile.ContentType;
+                    }
+
                     _context.Update(project);
                     await _context.SaveChangesAsync();
                 }
