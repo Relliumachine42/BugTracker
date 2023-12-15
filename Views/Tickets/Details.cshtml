@@ -1,187 +1,326 @@
 ﻿@model BugTracker.Models.Ticket
 @inject IBTFileService _fileService
 @using BugTracker.Services.Interfaces
+@inject IBTProjectService _projectService
+@inject UserManager<BTUser> _userManager
 
 @{
-	ViewData["Title"] = "Details";
+    ViewData["Title"] = "Ticket Details";
+    BTUser? btUser = await _userManager.GetUserAsync(User);
+    BTUser? projectManager = await _projectService.GetProjectManagerAsync(Model.Project?.Id)!;
 }
 
-<h1>Ticket Details</h1>
-<h6>@Model.DeveloperUser?.FullName</h6>
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body task-detail">
+                <div class="dropdown float-end">
+                    <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="mdi mdi-dots-vertical"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <!-- item-->
+                        <a asp-action="AssignTicket" asp-route-id="@Model.Id" class="dropdown-item">Assign</a>
+                        <!-- item-->
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="dropdown-item">Edit</a>
+                        <!-- item-->
+                        @if (Model.Archived == false)
+                        {
+                            <a class="dropdown-item" asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
+                        }
+                        else
+                        {
+                            <a class="dropdown-item" asp-action="Undelete" asp-route-id="@Model.Id">Undelete</a>
+                        }
+                    </div>
+                </div>
+                <div class="d-flex mb-3">
+                    <img src="@_fileService.ConvertByteArrayToFile(Model.Project.ImageData,Model.Project.ImageType,DefaultImage.ProjectImage)" class="rounded-circle avatar-xl img-thumbnail mb-2" alt="profile-image">
+                    <div class="flex-grow-1">
+                        <h4 class="media-heading mt-0">@Model.Title</h4>
+                        <span class="ms-2">Priority:</span>
+                        <span class="badge bg-danger">@Model.TicketPriority?.Name</span>
+                        <span class="ms-2">Status:</span>
+                        <span class="badge bg-success">@Model.TicketStatus?.Name</span>
+                        <span class="ms-2">Type:</span>
+                        <span class="badge bg-primary">@Model.TicketType?.Name</span>
+                    </div>
+                </div>
 
-<div>
-	<div classxfont-weighteighteightgetainer-fluid">
-		<div class="row gy-2">
-			<div class="col-md-12 col">
-				<div class="row col-cols-2 mt-5 bg-secondary">
-					<div class="card col m-1 p-2">
-						<div class="card-body">
-							@*Title of Ticket*@
-							<h5>@Model.Title</h5>
-							@*Description of Ticket*@
-							<p>@Model.Description</p>
-							<div class="progress-container progress-info m-b-25">
-								@*Project Name and information*@
-								<span class="progress-badge" style="font-size:small">Project: @Model.Project?.Name</span>
-								<div class="progress">
-									@*Progress bar logic*@
-									@*Variable from razor logic*@
-									<div class="progress-bar" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" style="width: [Percent]%;">
-										@*Variable from razor logic*@
-										<span class="progress-value">[Percent]%</span>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="card col m-1 p-2">
-						<div class="card-body">
-							<ul class="list-unstyled">
-								@*Ticket date*@
-								<li><strong>Date Entered:</strong> <span class=""> @Model.Created</</span></li>
-								@*Project end date*@
-								<li><strong>Deadline:</strong> <span class=""> @Model.Project?.EndDate</</span></li>
-								@*Ticket type*@
-								<li><strong>Type:</strong> <span class=""> @Model.TicketType?.Name</span></li>
-								@*Ticket priority*@
-								<li><strong>Priority:</strong> <span class=""> @Model.TicketPriority?.Name</span></li>
-								@*Ticket status*@
-								<li><strong>Status:</strong> <span class=""> @Model.TicketStatus?.Name</span></li>
-								@if (Model.Archived == true || Model.ArchivedByProject == true)
-								{
-									<p class="text-danger font-13 text-center"><strong>Archived</strong></p>
-								}
-							</ul>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-8 col col-cols-2 mt-5 ">
-				<div class="col">
-					<div class="bg-secondary">
-						<div class="card m-1 p-2">
-							<div class="card-header">
-								<h2>Comments</h2>
-							</div>
-							<div class="card-body" style="overflow-y:auto;height:600px;">
-
-								@*Form and Logic for authorized users to add comments*@
-								<hr />
-								<h6>Comments</h6>
-								<ul class="right_chat list-unstyled mb-0">
-									@*Loop to show comments made for the Ticket*@
-								</ul>
-							</div>
-							<div class="card-footer">
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col">
-					<div class="bg-secondary">
-						<div class="card m-1 p-2">
-							<div class="card-header">
-								<h2>Attachments</h2>
-							</div>
-							<div class="card-body" style="overflow-y:auto;height:300px;">
-
-								@* Refer to the Ticket Attachments document for this section *@
-
-								@* Ticket attachments part 1 here *@
-								<div class="row clearfix">
-									<div>
-										<form asp-action="AddTicketAttachment" asp-controller="Tickets" enctype="multipart/form-data" method="post">
-											<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-											<input type="hidden" asp-for="@Model.Id" name="TicketId">
-
-											<div class="media-body ml-3">
-												<label>
-													Description
-													<input name="Description" type="text" class="form-control" />
-												</label><br />
-												<label class="btn btn-outline-primary btn-sm">
-													<input name="FormFile" type="file" class="form-control-file" />
-												</label>
-												<button type="submit" class="btn btn-outline-secondary btn-sm md-btn-flat">Submit</button>
-											</div>
-										</form>
-									</div>
-								</div>
+                @if (Model.Archived == true)
+                {
+                    <h4 class="text-center bg-danger">Archived Ticket</h4>
+                } else if (Model.ArchivedByProject == true)
+                {
+                    <h4 class="text-center bg-danger">Archived Project</h4>
+                }
+                <h4>Project: @Model.Project.Name</h4>
 
 
-								@* Ticket attachments part 2 here *@
-								<hr />
-								<h6>Attachments</h6>
-								<div class="container">
-									<div class="row">
-										@foreach (TicketAttachment item in Model.Attachments)
-										{
-											<div class="col col-sm-2">
-												<a asp-action="ShowFile" asp-controller="Tickets" asp-route-Id="@item.Id">
-													<div class="icon">
-														<img src="@_fileService.GetFileIcon(item.FileName)" style="height:50px;width:50px" data-bs-toggle="tooltip" data-bs-placement="top" title="" data-bs-original-title="@item.FileName" />
-													</div>
-												</a>
-												<div style="font-size:x-small">
-													<div class="file-name">
-														<strong>@item.Description</strong>
-													</div>
-													<small>Size: @_fileService.FormatFileSize(item.FileData.Length) </small>
-												</div>
-											</div>
-										}
-									</div>
-								</div>
+                <p class="text-muted">
+                    @Model.Description
+                </p>
 
-							</div>
-							<div class="card-footer">
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-4 col mt-5 ">
-				<div class="bg-dark">
-					<div class="card m-1 p-2">
-						<div class="card-header">
-							<h2>History</h2>
-							<hr />
-						</div>
-						<div class="card-body" style="overflow-y:auto;height:1000px;background-color:antiquewhite">
-							@*Loop to show the history entries for the Ticket*@
-							@foreach (TicketHistory history in Model.History)
-							{
-								<div class="">
-									<span class="date" style="font-weight:bold">@history.Created.ToString("dd MMM yyyy")</span>
-									<h6>@history.Description</h6>
-									<span>By: <a href="" title="@history.User!.FullName">@history.User.FullName</a></span>
-									<div class="">
-										@if (history.Description!.Contains("New Ticket Created"))
-										{
-											<p>A ticket was added.</p>
-										}
-										else if (history.PropertyName!.Equals("TicketComment") || history.PropertyName.Equals("Ticket Attachment"))
-										{
-											<p>A <b>@history.PropertyName</b> was added.</p>
-										}
-										else
-										{
-											<p>The ticket <b>@history.PropertyName</b> was edited.</p>
-											<p>@($"Previous {history.PropertyName}: ") <span style="color:red">@history.OldValue</span></p>
-											<p>@($"Current {history.PropertyName}: ") <span style="color:green">@history.NewValue</span></p>
-										}
-									</div>
-								</div>
-								<hr />
-							}
+
+                <div class="row task-dates mb-0 mt-2">
+                    <div class="col-lg-6">
+                        <h5 class="font-600 m-b-5">Submitted</h5>
+                        <p>@Model.Created</p>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <h5 class="font-600 m-b-5">Due Date</h5>
+                        <p>@Model.Project.EndDate</p>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+
+                @*                 <div class="task-tags mt-2">
+                <h5>Tags</h5>
+                <input type="text" class="selectize-close-btn" value="Amsterdam,Washington,Sydney" data-role="tagsinput" placeholder="add tags" />
+                </div> *@
+
+                <div class="assign-team mt-3">
+                    <h5>Assigned to @Model.DeveloperUser?.FullName</h5>
+                    <div>
+
+                        <img class="rounded-circle avatar-sm" alt="64x64" src="@_fileService.ConvertByteArrayToFile(Model.DeveloperUser.ImageData,Model.DeveloperUser.ImageType,DefaultImage.BTUserImage)">
+                        <a asp-action="AssignTicket" asp-route-id="@Model.Id"><span class="add-new-plus"><i class="mdi mdi-plus"></i> </span></a>
+
+                    </div>
+                </div>
+
+                <div class="attached-files mt-3">
+                    <h5>Attached Files</h5>
+
+                    <ul class="list-inline files-list">
+
+                        @foreach (TicketAttachment item in Model.Attachments)
+                        {
+
+                            <li class="list-inline-item file-box">
+
+                                <a asp-action="ShowFile" asp-controller="Tickets" asp-route-Id="@item.Id">
+                                    <div class="icon">
+                                        <img src="@_fileService.GetFileIcon(item.FileName)" style="height:50px;width:50px" data-bs-toggle="tooltip" data-bs-placement="top" title="" data-bs-original-title="@item.FileName" />
+                                    </div>
+                                </a>
+
+                                <div style="font-size:x-small">
+                                    <div class="file-name">
+                                        <strong>@item.Description</strong>
+                                    </div>
+                                    <small>Size: @_fileService.FormatFileSize(item.FileData.Length) </small>
+                                </div>
+
+                            </li>
+                        }
+
+
+                        <li class="list-inline-item file-box ms-2">
+
+
+                            <form asp-action="AddTicketAttachment" asp-controller="Tickets" enctype="multipart/form-data" method="post">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <input type="hidden" asp-for="@Model.Id" name="TicketId" />
+                                <input type="hidden" asp-for="@Model.Id" name="Description" />
+
+                                <div class="fileupload add-new-plus">
+                                    <span><i class="mdi-plus mdi"></i></span>
+                                    <input name="FormFile" type="file" class="upload form-control-file">
+                                </div>
+
+
+                                <button type="submit" class="btn btn-outline-secondary btn-sm md-btn-flat">Submit</button>
+
+
+                            </form>
+
+
+                        </li>
+
+                    </ul>
+
+                </div>
+
+                <div class="mt-3">
+                    <h5>History</h5>
+                    <div class="card-body" style="overflow-y:auto;height:300px;background-color:antiquewhite">
+                        @*Loop to show the history entries for the Ticket*@
+                        @foreach (TicketHistory history in Model.History)
+                        {
+                            <div class="">
+                                <span class="date" style="font-weight:bold">@history.Created.ToString("dd MMM yyyy")</span>
+                                <h6>@history.Description</h6>
+                                <span>By: <a href="" title="@history.User!.FullName">@history.User.FullName</a></span>
+                                <div class="">
+                                    @if (history.Description!.Contains("New Ticket Created"))
+                                    {
+                                        <p>A ticket was added.</p>
+                                    }
+                                    else if (history.PropertyName!.Equals("TicketComment") || history.PropertyName.Equals("Ticket Attachment"))
+                                    {
+                                        <p>A <b>@history.PropertyName</b> was added.</p>
+                                    }
+                                    else
+                                    {
+                                        <p>The ticket <b>@history.PropertyName</b> was edited.</p>
+                                        <p>@($"Previous {history.PropertyName}: ") <span style="color:red">@history.OldValue</span></p>
+                                        <p>@($"Current {history.PropertyName}: ") <span style="color:green">@history.NewValue</span></p>
+                                    }
+                                </div>
+                            </div>
+                            <hr />
+                        }
 
 
 
 
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+
+    </div><!-- end col -->
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                @*                 <div class="dropdown float-end">
+                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                <!-- item-->
+                <a href="javascript:void(0);" class="dropdown-item">Action</a>
+                <!-- item-->
+                <a href="javascript:void(0);" class="dropdown-item">Another action</a>
+                <!-- item-->
+                <a href="javascript:void(0);" class="dropdown-item">Something else</a>
+                <!-- item-->
+                <a href="javascript:void(0);" class="dropdown-item">Separated link</a>
+                </div>
+                </div> *@
+
+                <h4 class="header-title mt-0 mb-3">Comments</h4>
+
+
+
+
+                <div>
+
+                    <div class="d-flex mb-3">
+                        <div class="flex-shrink-0 me-3">
+                            <a href="#"> <img class="rounded-circle avatar-sm" alt="64x64" src="assets/images/users/user-1.jpg"> </a>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="mt-0">Mat Helme</h5>
+                            <p class="font-13 text-muted mb-0">
+                                <a href="" class="text-primary">Michael</a>
+                                Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque
+                                ante sollicitudin commodo.
+                            </p>
+                            <a href="" class="text-success font-13">Reply</a>
+                        </div>
+                    </div>
+
+                    <div class="d-flex mb-3">
+                        <div class="flex-shrink-0 me-3">
+                            <a href="#"> <img class="rounded-circle avatar-sm" alt="64x64" src="assets/images/users/user-2.jpg"> </a>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="mt-0">Media heading</h5>
+                            <p class="font-13 text-muted mb-0">
+                                <a href="" class="text-primary">Michael</a>
+                                Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque sollicitudin purus odio.
+                            </p>
+                            <a href="" class="text-success font-13">Reply</a>
+
+                            <div class="d-flex my-2">
+                                <div class="flex-shrink-0 me-3">
+                                    <a href="#"> <img class="rounded-circle avatar-sm" alt="64x64" src="assets/images/users/user-3.jpg"> </a>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="mt-0">Nested media heading</h5>
+                                    <p class="font-13 text-muted mb-0">
+                                        <a href="" class="text-primary">Michael</a>
+                                        Cras sit amet nibh libero, in gravida nulla vel metus scelerisque ante sollicitudin purus odio.
+                                    </p>
+                                    <a href="" class="text-success font-13">Reply</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex mb-3">
+                        <div class="flex-shrink-0 me-3">
+                            <a href="#"> <img class="rounded-circle avatar-sm" alt="64x64" src="assets/images/users/user-1.jpg"> </a>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="mt-0">Mat Helme</h5>
+                            <p class="font-13 text-muted mb-0">
+                                <a href="" class="text-primary">Michael</a>
+                                Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque
+                                ante sollicitudin commodo cras purus.
+                            </p>
+                            <a href="" class="text-success font-13">Reply</a>
+                        </div>
+                    </div>
+
+                    <div class="d-flex mb-3">
+                        <div class="flex-shrink-0 me-3">
+                            <a href="#"> <img class="rounded-circle avatar-sm" alt="64x64" src="assets/images/users/user-1.jpg"> </a>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="mt-0">Mat Helme</h5>
+                            <p class="font-13 text-muted mb-0">
+                                <a href="" class="text-primary">Michael</a>
+                                Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque
+                                ante sollicitudin commodo cras.
+                            </p>
+                            <a href="" class="text-success font-13">Reply</a>
+                        </div>
+                    </div>
+
+                    <div class="d-flex mb-3">
+                        <div class=" me-3">
+                            <a href="#"> <img class="rounded-circle avatar-sm" alt="64x64" src="assets/images/users/user-1.jpg"> </a>
+                        </div>
+                        <div class="flex-grow-1">
+                            <input type="text" class="form-control" placeholder="Some text value...">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="col-sm-12">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="text-start">
+                                <a asp-action="Edit" asp-route-id="@Model.Id" type="button" class="btn btn-success waves-effect waves-light me-1">
+                                    Edit
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-end">
+                                <a asp-action="Index" type="button"
+                                   class="btn btn-light waves-effect">
+                                    Back
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- end col -->
 </div>
+<!-- end row -->
