@@ -77,6 +77,33 @@ namespace BugTracker.Services
 
         #endregion
 
+        #region Get All Invites {companyId}
+        public async Task<List<Invite>> GetAllInvitesByCompanyIdAsync(int? companyId)
+        {
+            try
+            {
+                List<Invite> invites = await _context.Invites
+                                                                .Where(i => i.CompanyId == companyId)
+                                                                .Include(i => i.Company)
+                                                                .Include(i => i.Project)
+                                                                .Include(i => i.Invitor)
+                                                                .ToListAsync();
+
+                return invites;
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        #endregion
+
+
+
+
         #region Get Invite {id}
         public async Task<Invite> GetInviteAsync(int inviteId, int companyId)
         {

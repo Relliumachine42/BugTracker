@@ -13,11 +13,12 @@ using BugTracker.Services.Interfaces;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Identity;
 using BugTracker.Extensions;
+using X.PagedList;
 
 namespace BugTracker.Controllers
 {
     [Authorize(Roles = "Admin")]
-    public class InvitesController : Controller
+    public class InvitesController : BTBaseController
     {
         private readonly ApplicationDbContext _context;
         private readonly IBTProjectService _projectService;
@@ -44,10 +45,16 @@ namespace BugTracker.Controllers
         }
 
         // GET: Invites
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? pageNum)
         {
-            var applicationDbContext = _context.Invites.Include(i => i.Company).Include(i => i.Invitee).Include(i => i.Invitor).Include(i => i.Project);
-            return View(await applicationDbContext.ToListAsync());
+            int pageSize = 9;
+            int page = pageNum ?? 1;
+
+            IPagedList<Invite> invites = await (await _inviteService.GetAllInvitesByCompanyIdAsync(_companyId)).ToPagedListAsync(page, pageSize);
+
+            ViewData["ActionName"] = nameof(Index);
+
+            return View(invites);
         }
 
         // GET: Invites/Details/5
@@ -129,7 +136,7 @@ namespace BugTracker.Controllers
                     // Add Invite service method for "AddNewInviteAsync"
                     await _inviteService.AddNewInviteAsync(invite);
 
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction(nameof(Index));
 
                     // TODO: Possibly use SWAL message
 

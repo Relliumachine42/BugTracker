@@ -1,101 +1,125 @@
-﻿@model IEnumerable<BugTracker.Models.Invite>
+﻿@model IPagedList<BugTracker.Models.Invite>
+@using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
+@using X.PagedList;
+@inject IBTFileService _fileService;
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Invites";
+    string? searchString = ViewBag.SearchString;
+    string? actionName = ViewBag.ActionName;
+    string? category = ViewBag.Category;
 }
 
-<h1>Index</h1>
+<!-- body start -->
+<body class="loading" data-layout-color="light" data-layout-mode="default" data-layout-size="fluid" data-topbar-color="light" data-leftbar-position="fixed" data-leftbar-color="light" data-leftbar-size='default' data-sidebar-user='true'>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.InviteDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.JoinDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CompanyToken)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.InviteeEmail)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.InviteeFirstName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.InviteeLastName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Message)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsValid)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Company)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Project)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Invitor)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Invitee)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.InviteDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.JoinDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CompanyToken)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.InviteeEmail)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.InviteeFirstName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.InviteeLastName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Message)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsValid)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Company.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Project.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Invitor.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Invitee.Id)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <!-- Begin page -->
+    <div id="wrapper">
+
+
+        <!-- ============================================================== -->
+        <!-- Start Page Content here -->
+        <!-- ============================================================== -->
+
+
+        <div class="content">
+
+            <!-- Start Content-->
+            <div class="container-fluid">
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row justify-content-between">
+                                    <div class="col-md-4">
+                                        <div class="mt-3 mt-md-0">
+                                            <a class="btn btn-success waves-effect waves-light" asp-controller="Invites" asp-action="Create"><i class="mdi mdi-plus-circle me-1"></i> New Invite</a>
+                                        </div>
+                                    </div><!-- end col-->
+
+                                </div> <!-- end row -->
+                            </div>
+                        </div> <!-- end card -->
+                    </div><!-- end col-->
+                </div>
+                <!-- end row -->
+
+                <div class="row">
+                    @foreach (Invite invite in Model)
+                    {
+
+                        <div class="col-xl-4">
+                            <div class="card">
+                                <div class="text-center card-body">
+
+                                    <div>
+                                        <img src="@_fileService.ConvertByteArrayToFile(invite.Project.ImageData,invite.Project.ImageType,DefaultImage.ProjectImage)" class="rounded-circle avatar-xl img-thumbnail mb-2" alt="profile-image">
+
+                                        <p class="font-14 text-center"><strong>@invite.InviteeFirstName @invite.InviteeLastName</strong></p>
+
+                                        <div class="text-start">
+
+                                            <p class="text-muted font-13"><strong>Project:</strong><span class="ms-2">@invite.Project.Name</span></p>
+                                            @if (invite.JoinDate == DateTime.MinValue)
+                                            {
+                                                <p class="text-muted font-13"><strong>Invited:</strong><span class="ms-2">@invite.InviteDate</span></p>
+                                            }
+                                            else
+                                            {
+                                                <p class="text-muted font-13"><strong>Joined:</strong><span class="ms-2">@invite.JoinDate</span></p>
+                                            }
+                                            <p class="text-muted font-13"><strong>Email:</strong><span class="ms-2">@invite.InviteeEmail</span></p>
+
+                                            @if (invite.IsValid == false)
+                                            {
+                                                <p class="text-danger font-13 text-center"><strong>Invalid</strong></p>
+                                            }
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div> <!-- end col -->
+                    }
+                    <div>
+                        <div>
+                            Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+                        </div>
+                        @Html.PagedListPager(Model, pageNum => Url.Action(actionName, new { pageNum, searchString, category}),
+                        new PagedListRenderOptions
+                        {
+                        LiElementClasses = new string[] {"my-page-item"},
+                        PageClasses = new string[] {"my-page-link" }
+                        })
+
+                    </div>
+
+                </div>
+                <!-- end row -->
+
+            </div> <!-- container -->
+
+        </div> <!-- content -->
+        <!-- ============================================================== -->
+        <!-- End Page content -->
+        <!-- ============================================================== -->
+
+
+    </div>
+    <!-- END wrapper -->
+    <!-- Vendor -->
+    <script src="assets/libs/jquery/jquery.min.js"></script>
+    <script src="assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/libs/simplebar/simplebar.min.js"></script>
+    <script src="assets/libs/node-waves/waves.min.js"></script>
+    <script src="assets/libs/waypoints/lib/jquery.waypoints.min.js"></script>
+    <script src="assets/libs/jquery.counterup/jquery.counterup.min.js"></script>
+    <script src="assets/libs/feather-icons/feather.min.js"></script>
+
+    <!-- App js -->
+    <script src="assets/js/app.min.js"></script>
+
+</body>
