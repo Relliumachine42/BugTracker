@@ -11,6 +11,8 @@ using BugTracker.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using BugTracker.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using X.PagedList;
+
 
 namespace BugTracker.Controllers
 {
@@ -46,8 +48,10 @@ namespace BugTracker.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpGet]
-        public async Task<IActionResult> ManageUserRoles()
+        public async Task<IActionResult> ManageUserRoles(int? pageNum)
         {
+            int pageSize = 9;
+            int page = pageNum ?? 1;
             // 1 - Add an instance of the ViewModel as a List (model)
             List<ManageUserRolesViewModel> model = new List<ManageUserRolesViewModel>();
 
@@ -80,8 +84,12 @@ namespace BugTracker.Controllers
                 }
             }
 
+            ViewData["ActionName"] = nameof(ManageUserRoles);
+
+            IPagedList<ManageUserRolesViewModel> pagedModel = await model.ToPagedListAsync(page, pageSize);
+
             // 5 - Return the model to the View
-            return View(model);
+            return View(pagedModel);
 
         }
 

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ManageUserRolesViewModel>
+﻿@model IPagedList<ManageUserRolesViewModel>
 @using X.PagedList.Mvc.Core;
 @using X.PagedList.Web.Common;
 @using X.PagedList;
@@ -149,7 +149,7 @@
 
                         </div> <!-- end col -->
                     }
-@*                     <div>
+                    <div>
                         <div>
                             Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
                         </div>
@@ -160,7 +160,7 @@
                         PageClasses = new string[] {"my-page-link" }
                         })
 
-                    </div> *@
+                    </div>
 
                 </div>
                 <!-- end row -->
