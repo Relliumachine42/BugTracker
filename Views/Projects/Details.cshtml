@@ -109,73 +109,61 @@
                                         Title
                                     </th>
                                     <th>
-                                        Description
-                                    </th>
-                                    <th>
                                         Created
-                                    </th>
-                                    <th>
-                                        Updated
                                     </th>
                                     <th>
                                         Archived
                                     </th>
                                     <th>
-                                        TicketPriority
+                                        Ticket Priority
                                     </th>
                                     <th>
-                                        TicketType
+                                        Ticket Type
                                     </th>
                                     <th>
-                                        TicketStatus
+                                        Ticket Status
                                     </th>
                                     <th>
-                                        DeveloperUser
+                                        Developer
                                     </th>
                                     <th>
-                                        SubmitterUser
+                                        Submitter
                                     </th>
                                     <th></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (Ticket item in Model.Tickets)
+                                @foreach (Ticket ticket in Model.Tickets)
                                 {
                                     <tr>
                                         <td>
-                                            @item.Title
+                                            @ticket.Title
                                         </td>
                                         <td>
-                                            @item.Description
+                                            @ticket.Created
                                         </td>
                                         <td>
-                                            @item.Created
+                                            @ticket.Archived
                                         </td>
                                         <td>
-                                            @item.Updated
+                                            @ticket.TicketPriority?.Name
                                         </td>
                                         <td>
-                                            @item.Archived
+                                            @ticket.TicketType?.Name
                                         </td>
                                         <td>
-                                            @item.TicketPriority?.Name
+                                            @ticket.TicketStatus?.Name
                                         </td>
                                         <td>
-                                            @item.TicketType?.Name
+                                            @ticket.DeveloperUser?.FullName
                                         </td>
                                         <td>
-                                            @item.TicketStatus?.Name
+                                            @ticket.SubmitterUser?.FullName
                                         </td>
                                         <td>
-                                            @item.DeveloperUser?.FullName
-                                        </td>
-                                        <td>
-                                            @item.SubmitterUser?.FullName
-                                        </td>
-                                        <td>
-                                            <a asp-action="Edit" asp-controller="Tickets" asp-route-id="@item.Id">Edit</a> |
-                                            <a asp-action="Details" asp-controller="Tickets" asp-route-id="@item.Id">Details</a> |
-                                            <a asp-action="Delete" asp-controller="Tickets" asp-route-id="@item.Id">Delete</a>
+                                            <a asp-action="Edit" asp-controller="Tickets" asp-route-id="@ticket.Id">Edit</a>
+                                            <a asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id">Details</a>
+                                            <a asp-action="Delete" asp-controller="Tickets" asp-route-id="@ticket.Id">Delete</a>
                                         </td>
                                     </tr>
                                 }

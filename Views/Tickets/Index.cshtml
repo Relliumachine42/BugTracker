@@ -97,6 +97,15 @@
                                         </p>
 
                                         <div class="text-start">
+                                            @if (ticket.DeveloperUser == null)
+                                            {
+                                                <p class="text-muted font-13"><strong>Developer Name:</strong> <span class="ms-2">Unassigned</span></p>
+                                            }
+                                            else
+                                            {
+                                                <p class="text-muted font-13"><strong>Developer Name:</strong> <span class="ms-2">@ticket.DeveloperUser.FullName</span></p>
+
+                                            }
                                             <p class="text-muted font-13"><strong>Submitter Name:</strong> <span class="ms-2">@ticket.SubmitterUser.FullName</span></p>
 
                                             <p class="text-muted font-13"><strong>Priority:</strong><span class="ms-2">@ticket.TicketPriority.Name</span></p>

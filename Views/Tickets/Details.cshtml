@@ -6,7 +6,7 @@
 
 @{
     ViewData["Title"] = "Ticket Details";
-    BTUser? btUser = await _userManager.GetUserAsync(User);
+    BTUser? bTUser = await _userManager.GetUserAsync(User);
     BTUser? projectManager = await _projectService.GetProjectManagerAsync(Model.Project?.Id)!;
 }
 
@@ -50,7 +50,8 @@
                 @if (Model.Archived == true)
                 {
                     <h4 class="text-center bg-danger">Archived Ticket</h4>
-                } else if (Model.ArchivedByProject == true)
+                }
+                else if (Model.ArchivedByProject == true)
                 {
                     <h4 class="text-center bg-danger">Archived Project</h4>
                 }
@@ -84,7 +85,7 @@
                     <h5>Assigned to @Model.DeveloperUser?.FullName</h5>
                     <div>
 
-                        <img class="rounded-circle avatar-sm" alt="64x64" src="@_fileService.ConvertByteArrayToFile(Model.DeveloperUser.ImageData,Model.DeveloperUser.ImageType,DefaultImage.BTUserImage)">
+                        <img class="rounded-circle avatar-sm" alt="64x64" src="@_fileService.ConvertByteArrayToFile(Model.DeveloperUser?.ImageData,Model.DeveloperUser?.ImageType,DefaultImage.BTUserImage)">
                         <a asp-action="AssignTicket" asp-route-id="@Model.Id"><span class="add-new-plus"><i class="mdi mdi-plus"></i> </span></a>
 
                     </div>
@@ -188,7 +189,7 @@
 
     <div class="col-md-4">
         <div class="card">
-            <div class="card-body">
+            <div class="card-body" style="overflow-y:auto;height:700px">
                 @*                 <div class="dropdown float-end">
                 <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="mdi mdi-dots-vertical"></i>
@@ -205,96 +206,86 @@
                 </div>
                 </div> *@
 
-                <h4 class="header-title mt-0 mb-3">Comments</h4>
+                <h4 class="header-title mt-0 mb-3">Comments (@Model.Comments.Count)</h4>
 
 
 
 
                 <div>
 
-                    <div class="d-flex mb-3">
-                        <div class="flex-shrink-0 me-3">
-                            <a href="#"> <img class="rounded-circle avatar-sm" alt="64x64" src="assets/images/users/user-1.jpg"> </a>
-                        </div>
-                        <div class="flex-grow-1">
-                            <h5 class="mt-0">Mat Helme</h5>
-                            <p class="font-13 text-muted mb-0">
-                                <a href="" class="text-primary">Michael</a>
-                                Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque
-                                ante sollicitudin commodo.
-                            </p>
-                            <a href="" class="text-success font-13">Reply</a>
-                        </div>
+
+                    @*                     <div class="d-flex mb-3">
+                    <div class="flex-shrink-0 me-3">
+                    <a href="#"> <img class="rounded-circle avatar-sm" alt="64x64" src="assets/images/users/user-2.jpg"> </a>
                     </div>
+                    <div class="flex-grow-1">
+                    <h5 class="mt-0">Media heading</h5>
+                    <p class="font-13 text-muted mb-0">
+                    <a href="" class="text-primary">Michael</a>
+                    Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque sollicitudin purus odio.
+                    </p>
+                    <a href="" class="text-success font-13">Reply</a>
 
-                    <div class="d-flex mb-3">
-                        <div class="flex-shrink-0 me-3">
-                            <a href="#"> <img class="rounded-circle avatar-sm" alt="64x64" src="assets/images/users/user-2.jpg"> </a>
-                        </div>
-                        <div class="flex-grow-1">
-                            <h5 class="mt-0">Media heading</h5>
-                            <p class="font-13 text-muted mb-0">
-                                <a href="" class="text-primary">Michael</a>
-                                Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque sollicitudin purus odio.
-                            </p>
-                            <a href="" class="text-success font-13">Reply</a>
+                    <div class="d-flex my-2">
+                    <div class="flex-shrink-0 me-3">
+                    <a href="#"> <img class="rounded-circle avatar-sm" alt="64x64" src="assets/images/users/user-3.jpg"> </a>
+                    </div>
+                    <div class="flex-grow-1">
+                    <h5 class="mt-0">Nested media heading</h5>
+                    <p class="font-13 text-muted mb-0">
+                    <a href="" class="text-primary">Michael</a>
+                    Cras sit amet nibh libero, in gravida nulla vel metus scelerisque ante sollicitudin purus odio.
+                    </p>
+                    <a href="" class="text-success font-13">Reply</a>
+                    </div>
+                    </div>
+                    </div>
+                    </div> *@
 
-                            <div class="d-flex my-2">
-                                <div class="flex-shrink-0 me-3">
-                                    <a href="#"> <img class="rounded-circle avatar-sm" alt="64x64" src="assets/images/users/user-3.jpg"> </a>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h5 class="mt-0">Nested media heading</h5>
-                                    <p class="font-13 text-muted mb-0">
-                                        <a href="" class="text-primary">Michael</a>
-                                        Cras sit amet nibh libero, in gravida nulla vel metus scelerisque ante sollicitudin purus odio.
-                                    </p>
-                                    <a href="" class="text-success font-13">Reply</a>
-                                </div>
+
+
+
+                    @foreach (TicketComment ticketComment in Model.Comments.OrderByDescending(c => c.Created))
+                    {
+                        <div class="d-flex mb-3">
+                            <div class="flex-shrink-0 me-3">
+                                <a> <img class="rounded-circle avatar-sm" alt="Commenter Image" src="@_fileService.ConvertByteArrayToFile(ticketComment.User.ImageData, ticketComment.User.ImageType, DefaultImage.BTUserImage)"> </a>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h5 class="mt-0">@ticketComment.User.FullName</h5>
+                                <p class="font-13 text-muted mb-0">
+                                    @ticketComment.Comment
+                                </p>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="d-flex mb-3">
-                        <div class="flex-shrink-0 me-3">
-                            <a href="#"> <img class="rounded-circle avatar-sm" alt="64x64" src="assets/images/users/user-1.jpg"> </a>
-                        </div>
-                        <div class="flex-grow-1">
-                            <h5 class="mt-0">Mat Helme</h5>
-                            <p class="font-13 text-muted mb-0">
-                                <a href="" class="text-primary">Michael</a>
-                                Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque
-                                ante sollicitudin commodo cras purus.
-                            </p>
-                            <a href="" class="text-success font-13">Reply</a>
-                        </div>
-                    </div>
+                    }
 
-                    <div class="d-flex mb-3">
-                        <div class="flex-shrink-0 me-3">
-                            <a href="#"> <img class="rounded-circle avatar-sm" alt="64x64" src="assets/images/users/user-1.jpg"> </a>
-                        </div>
-                        <div class="flex-grow-1">
-                            <h5 class="mt-0">Mat Helme</h5>
-                            <p class="font-13 text-muted mb-0">
-                                <a href="" class="text-primary">Michael</a>
-                                Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque
-                                ante sollicitudin commodo cras.
-                            </p>
-                            <a href="" class="text-success font-13">Reply</a>
-                        </div>
-                    </div>
 
-                    <div class="d-flex mb-3">
-                        <div class=" me-3">
-                            <a href="#"> <img class="rounded-circle avatar-sm" alt="64x64" src="assets/images/users/user-1.jpg"> </a>
-                        </div>
-                        <div class="flex-grow-1">
-                            <input type="text" class="form-control" placeholder="Some text value...">
-                        </div>
-                    </div>
+
+
+
 
                 </div>
+            </div>
+            <div class="card-body">
+
+                    <form asp-action="Create" asp-controller="TicketComments">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="Id" name="TicketId" />
+
+                        <div class="d-flex mb-3">
+                            <div class=" me-3">
+                                <a> <img class="rounded-circle avatar-sm" alt="User Image" src="@_fileService.ConvertByteArrayToFile(bTUser.ImageData, bTUser.ImageType, DefaultImage.BTUserImage)"> </a>
+                            </div>
+                            <div class="flex-grow-1">
+                                <input name="Comment" type="text" class="form-control" placeholder="Leave a Comment..." required />
+                            </div>
+                        </div>
+
+
+
+                    </form>
             </div>
         </div>
         <div class="card">
