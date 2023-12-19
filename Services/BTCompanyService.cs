@@ -56,9 +56,18 @@ namespace BugTracker.Services
             }
         }
 
-        public Task<List<Project>> GetProjectsAsync(int? companyId)
+        public async Task<List<Project>> GetProjectsAsync(int? companyId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                List<Project>? projects = new();
+                projects = await _context.Projects.Where(p => p.CompanyId == companyId).ToListAsync();
+                return projects;
+            }
+            catch 
+            {
+                throw;
+            }
         }
     }
 }
