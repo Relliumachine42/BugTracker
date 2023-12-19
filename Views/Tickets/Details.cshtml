@@ -7,7 +7,7 @@
 @{
     ViewData["Title"] = "Ticket Details";
     BTUser? bTUser = await _userManager.GetUserAsync(User);
-    BTUser? projectManager = await _projectService.GetProjectManagerAsync(Model.Project?.Id)!;
+    BTUser? projectManager = await _projectService.GetProjectManagerAsync(Model.ProjectId)!;
 }
 
 <div class="row">
@@ -19,8 +19,11 @@
                         <i class="mdi mdi-dots-vertical"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end">
-                        <!-- item-->
-                        <a asp-action="AssignTicket" asp-route-id="@Model.Id" class="dropdown-item">Assign</a>
+                        @if (User.IsInRole("Admin") || User.IsInRole("ProjectManager"))
+                        {
+                            <!-- item-->
+                            <a asp-action="AssignTicket" asp-route-id="@Model.Id" class="dropdown-item">Assign</a>
+                        }
                         <!-- item-->
                         <a asp-action="Edit" asp-route-id="@Model.Id" class="dropdown-item">Edit</a>
                         <!-- item-->
@@ -86,7 +89,10 @@
                     <div>
 
                         <img class="rounded-circle avatar-sm" alt="64x64" src="@_fileService.ConvertByteArrayToFile(Model.DeveloperUser?.ImageData,Model.DeveloperUser?.ImageType,DefaultImage.BTUserImage)">
-                        <a asp-action="AssignTicket" asp-route-id="@Model.Id"><span class="add-new-plus"><i class="mdi mdi-plus"></i> </span></a>
+                        @if (User.IsInRole("Admin") || User.IsInRole("ProjectManager"))
+                        {
+                        <a asp-action="AssignTicket" asp-route-id="@Model.Id"><span class="add-new-plus"><i class="mdi mdi-plus"></i> </span></a>                            
+                        }
 
                     </div>
                 </div>
@@ -270,22 +276,22 @@
             </div>
             <div class="card-body">
 
-                    <form asp-action="Create" asp-controller="TicketComments">
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                        <input type="hidden" asp-for="Id" name="TicketId" />
+                <form asp-action="Create" asp-controller="TicketComments">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="Id" name="TicketId" />
 
-                        <div class="d-flex mb-3">
-                            <div class=" me-3">
-                                <a> <img class="rounded-circle avatar-sm" alt="User Image" src="@_fileService.ConvertByteArrayToFile(bTUser.ImageData, bTUser.ImageType, DefaultImage.BTUserImage)"> </a>
-                            </div>
-                            <div class="flex-grow-1">
-                                <input name="Comment" type="text" class="form-control" placeholder="Leave a Comment..." required />
-                            </div>
+                    <div class="d-flex mb-3">
+                        <div class=" me-3">
+                            <a> <img class="rounded-circle avatar-sm" alt="User Image" src="@_fileService.ConvertByteArrayToFile(bTUser.ImageData, bTUser.ImageType, DefaultImage.BTUserImage)"> </a>
                         </div>
+                        <div class="flex-grow-1">
+                            <input name="Comment" type="text" class="form-control" placeholder="Leave a Comment..." required />
+                        </div>
+                    </div>
 
 
 
-                    </form>
+                </form>
             </div>
         </div>
         <div class="card">

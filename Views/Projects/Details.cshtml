@@ -6,7 +6,7 @@
 
 @{
     ViewData["Title"] = "Project Details";
-    BTUser? btUser = await _UserManager.GetUserAsync(User);
+    BTUser? bTUser = await _UserManager.GetUserAsync(User);
     BTUser? projectManager = await _ProjectService.GetProjectManagerAsync(Model.Id)!;
 }
 
@@ -16,31 +16,35 @@
     <div class="col-md-8">
         <div class="card">
             <div class="card-body task-detail">
-                <div class="dropdown float-end">
-                    <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="mdi mdi-dots-vertical"></i>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-end">
-                        <!-- item-->
-                        @if (Model.Archived == false)
-                        {
-                            <a class="dropdown-item" asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
-                        }
-                        else
-                        {
-                            <a class="dropdown-item" asp-action="Undelete" asp-route-id="@Model.Id">Undelete</a>
-                        }
-                        <!-- item-->
-                        @if (await _ProjectService.GetProjectManagerAsync(Model.Id) == null)
-                        {
-                            <a class="dropdown-item" asp-action="AssignPM" asp-route-id="@Model.Id">Assign PM</a>
-                        }
-                        else
-                        {
-                            <a class="dropdown-item" asp-action="AssignPM" asp-route-id="@Model.Id">Manage PM</a>
-                        }
+                @if (User.IsInRole("Admin") || User.IsInRole("ProjectManager"))
+                {
+                    <div class="dropdown float-end">
+                        <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="mdi mdi-dots-vertical"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <!-- item-->
+                            @if (Model.Archived == false)
+                            {
+                                <a class="dropdown-item" asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
+                            }
+                            else
+                            {
+                                <a class="dropdown-item" asp-action="Undelete" asp-route-id="@Model.Id">Undelete</a>
+                            }
+                            <!-- item-->
+                            @if (await _ProjectService.GetProjectManagerAsync(Model.Id) == null)
+                            {
+                                <a class="dropdown-item" asp-action="AssignPM" asp-route-id="@Model.Id">Assign PM</a>
+                            }
+                            else
+                            {
+                                <a class="dropdown-item" asp-action="AssignPM" asp-route-id="@Model.Id">Manage PM</a>
+                            }
+                        </div>
                     </div>
-                </div>
+                }
+
                 <div class="d-flex mb-3">
                     <img src="@_fileService.ConvertByteArrayToFile(Model.ImageData,Model.ImageType,DefaultImage.ProjectImage)" class="rounded-circle avatar-xl img-thumbnail mb-2" alt="profile-image">
                     <div class="flex-grow-1">
@@ -92,7 +96,11 @@
                         </div> *@
 
                         }
-                        <a asp-action="AssignProjectMembers" asp-route-id="@Model.Id"><span class="add-new-plus"><i class="mdi mdi-plus"></i> </span></a>
+
+                        @if (User.IsInRole("Admin") || User.IsInRole("ProjectManager"))
+                        {
+                        <a asp-action="AssignProjectMembers" asp-route-id="@Model.Id"><span class="add-new-plus"><i class="mdi mdi-plus"></i> </span></a>                            
+                        }
 
                     </div>
                 </div>
@@ -135,37 +143,114 @@
                             <tbody>
                                 @foreach (Ticket ticket in Model.Tickets)
                                 {
-                                    <tr>
-                                        <td>
-                                            @ticket.Title
-                                        </td>
-                                        <td>
-                                            @ticket.Created
-                                        </td>
-                                        <td>
-                                            @ticket.Archived
-                                        </td>
-                                        <td>
-                                            @ticket.TicketPriority?.Name
-                                        </td>
-                                        <td>
-                                            @ticket.TicketType?.Name
-                                        </td>
-                                        <td>
-                                            @ticket.TicketStatus?.Name
-                                        </td>
-                                        <td>
-                                            @ticket.DeveloperUser?.FullName
-                                        </td>
-                                        <td>
-                                            @ticket.SubmitterUser?.FullName
-                                        </td>
-                                        <td>
-                                            <a asp-action="Edit" asp-controller="Tickets" asp-route-id="@ticket.Id">Edit</a>
-                                            <a asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id">Details</a>
-                                            <a asp-action="Delete" asp-controller="Tickets" asp-route-id="@ticket.Id">Delete</a>
-                                        </td>
-                                    </tr>
+                                    if (User.IsInRole("Admin"))
+                                    {
+                                        <tr>
+                                            <td>
+                                                @ticket.Title
+                                            </td>
+                                            <td>
+                                                @ticket.Created
+                                            </td>
+                                            <td>
+                                                @ticket.Archived
+                                            </td>
+                                            <td>
+                                                @ticket.TicketPriority?.Name
+                                            </td>
+                                            <td>
+                                                @ticket.TicketType?.Name
+                                            </td>
+                                            <td>
+                                                @ticket.TicketStatus?.Name
+                                            </td>
+                                            <td>
+                                                @ticket.DeveloperUser?.FullName
+                                            </td>
+                                            <td>
+                                                @ticket.SubmitterUser?.FullName
+                                            </td>
+                                            <td>
+                                                <a asp-action="Edit" asp-controller="Tickets" asp-route-id="@ticket.Id">Edit</a>
+                                                <a asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id">Details</a>
+                                                <a asp-action="Delete" asp-controller="Tickets" asp-route-id="@ticket.Id">Delete</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                    else if (User.IsInRole("ProjectManager") && (ticket.DeveloperUserId == bTUser?.Id || ticket.SubmitterUserId == bTUser?.Id || projectManager.Id == bTUser?.Id))
+                                    {
+                                        <tr>
+                                            <td>
+                                                @ticket.Title
+                                            </td>
+                                            <td>
+                                                @ticket.Created
+                                            </td>
+                                            <td>
+                                                @ticket.Archived
+                                            </td>
+                                            <td>
+                                                @ticket.TicketPriority?.Name
+                                            </td>
+                                            <td>
+                                                @ticket.TicketType?.Name
+                                            </td>
+                                            <td>
+                                                @ticket.TicketStatus?.Name
+                                            </td>
+                                            <td>
+                                                @ticket.DeveloperUser?.FullName
+                                            </td>
+                                            <td>
+                                                @ticket.SubmitterUser?.FullName
+                                            </td>
+                                            <td>
+                                                <a asp-action="Edit" asp-controller="Tickets" asp-route-id="@ticket.Id">Edit</a>
+                                                <a asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id">Details</a>
+                                                <a asp-action="Delete" asp-controller="Tickets" asp-route-id="@ticket.Id">Delete</a>
+                                            </td>
+                                        </tr>
+
+                                    }
+                                    else if (ticket.DeveloperUserId == bTUser?.Id || ticket.SubmitterUserId == bTUser?.Id)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @ticket.Title
+                                            </td>
+                                            <td>
+                                                @ticket.Created
+                                            </td>
+                                            <td>
+                                                @ticket.Archived
+                                            </td>
+                                            <td>
+                                                @ticket.TicketPriority?.Name
+                                            </td>
+                                            <td>
+                                                @ticket.TicketType?.Name
+                                            </td>
+                                            <td>
+                                                @ticket.TicketStatus?.Name
+                                            </td>
+                                            <td>
+                                                @ticket.DeveloperUser?.FullName
+                                            </td>
+                                            <td>
+                                                @ticket.SubmitterUser?.FullName
+                                            </td>
+                                            <td>
+                                                <a asp-action="Edit" asp-controller="Tickets" asp-route-id="@ticket.Id">Edit</a>
+                                                <a asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id">Details</a>
+                                                <a asp-action="Delete" asp-controller="Tickets" asp-route-id="@ticket.Id">Delete</a>
+                                            </td>
+                                        </tr>
+
+                                    }
+
+
+
+
                                 }
                             </tbody>
                         </table>
@@ -356,11 +441,14 @@
                 <div class="col-sm-12">
                     <div class="row">
                         <div class="col-6">
+                            @if (User.IsInRole("Admin") || User.IsInRole("ProjectManager"))
+                            {
                             <div class="text-start">
                                 <a asp-action="Edit" asp-route-id="@Model.Id" type="button" class="btn btn-success waves-effect waves-light me-1">
                                     Edit
                                 </a>
-                            </div>
+                            </div>                               
+                            }
                         </div>
                         <div class="col-6">
                             <div class="text-end">

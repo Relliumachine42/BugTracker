@@ -44,7 +44,7 @@
         <div class="navbar-custom">
             <ul class="list-unstyled topnav-menu float-end mb-0">
 
-  @*               <li class="d-none d-lg-block">
+                @*               <li class="d-none d-lg-block">
                     <form class="app-search">
                         <div class="app-search-box">
                             <div class="input-group">
@@ -282,13 +282,21 @@
                     {
                         <p class="text-muted left-user-info">Admin</p>
                     }
+                    else if (User.IsInRole("ProjectManager"))
+                    {
+                        <p class="text-muted left-user-info">Project Manager</p>
+                    }
                     else if (User.IsInRole("Developer"))
                     {
                         <p class="text-muted left-user-info">Developer</p>
                     }
+                    else if (User.IsInRole("DemoUser"))
+                    {
+                        <p class="text-muted left-user-info">Demo User</p>
+                    }
                     else
                     {
-                        <p class="text-muted left-user-info">Member</p>
+                        <p class="text-muted left-user-info">Submitter</p>
                     }
 
                 </div>
@@ -379,19 +387,19 @@
                             <li>
                                 <a href="#contacts" data-bs-toggle="collapse">
                                     <i class="mdi mdi-book-open-page-variant-outline"></i>
-                                    <span> Manage </span>
+                                    <span> Admin Area </span>
                                     <span class="menu-arrow"></span>
                                 </a>
                                 <div class="collapse" id="contacts">
                                     <ul class="nav-second-level">
                                         <li>
-                                            <a asp-action="ManageUserRoles" asp-controller="Companies">Members</a>
+                                            <a asp-action="ManageUserRoles" asp-controller="Companies">Roles</a>
                                         </li>
                                         <li>
-                                            <a asp-action="Index" asp-controller="Invites">Company Invites</a>
+                                            <a asp-action="Index" asp-controller="Invites">Invites</a>
                                         </li>
                                         <li>
-                                            <a asp-action="Edit" asp-controller="Companies" asp-route-id="@bTUser.CompanyId">Admin Area</a>
+                                            <a asp-action="Edit" asp-controller="Companies" asp-route-id="@bTUser.CompanyId">Company</a>
                                         </li>
                                     </ul>
                                 </div>

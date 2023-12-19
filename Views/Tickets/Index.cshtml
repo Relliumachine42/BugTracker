@@ -3,12 +3,15 @@
 @using X.PagedList;
 @model IPagedList<BugTracker.Models.Ticket>
 @inject IBTFileService _fileService
+@inject UserManager<BTUser> _userManager
+@inject IBTProjectService _projectService
 
 @{
     ViewData["Title"] = "Tickets";
     string? searchString = ViewBag.SearchString;
     string? actionName = ViewBag.ActionName;
     string? category = ViewBag.Category;
+    BTUser? bTUser = await _userManager.GetUserAsync(User);
 }
 
 <!-- body start -->
@@ -38,22 +41,22 @@
                                         </div>
                                     </div><!-- end col-->
                                     <div class="col-md-8">
-                                        <form class="d-flex flex-wrap align-items-center justify-content-sm-end">
-                                            <label for="status-select" class="me-2">Sort By</label>
-                                            <div class="me-sm-2">
-                                                <select class="form-select my-1 my-md-0" id="status-select">
-                                                    <option selected="">All</option>
-                                                    <option value="1">Name</option>
-                                                    <option value="2">Post</option>
-                                                    <option value="3">Followers</option>
-                                                    <option value="4">Followings</option>
-                                                </select>
-                                            </div>
-                                            <label for="inputPassword2" class="visually-hidden">Search</label>
-                                            <div>
-                                                <input type="search" class="form-control my-1 my-md-0" id="inputPassword2" placeholder="Search...">
-                                            </div>
-                                        </form>
+                                        @*                                         <form class="d-flex flex-wrap align-items-center justify-content-sm-end">
+                                        <label for="status-select" class="me-2">Sort By</label>
+                                        <div class="me-sm-2">
+                                        <select class="form-select my-1 my-md-0" id="status-select">
+                                        <option selected="">All</option>
+                                        <option value="1">Name</option>
+                                        <option value="2">Post</option>
+                                        <option value="3">Followers</option>
+                                        <option value="4">Followings</option>
+                                        </select>
+                                        </div>
+                                        <label for="inputPassword2" class="visually-hidden">Search</label>
+                                        <div>
+                                        <input type="search" class="form-control my-1 my-md-0" id="inputPassword2" placeholder="Search...">
+                                        </div>
+                                        </form> *@
                                     </div>
                                 </div> <!-- end row -->
                             </div>
@@ -64,71 +67,215 @@
                 <div class="row">
                     @foreach (Ticket ticket in Model)
                     {
-                        <div class="col-xl-4">
+                        BTUser? pManager = await _projectService.GetProjectManagerAsync(ticket.ProjectId);
+
+                        if (User.IsInRole("Admin"))
+                        {
+                            <div class="col-xl-4">
 
 
-                            <div class="card">
-                                <div class="text-center card-body">
-                                    <div class="dropdown float-end">
-                                        <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i class="mdi mdi-dots-vertical"></i>
-                                        </a>
-                                        <div class="dropdown-menu dropdown-menu-end">
-                                            <!-- item-->
-                                            <a asp-action="AssignTicket" asp-route-id="@ticket.Id" class="dropdown-item">Assign</a>
-                                            <!-- item-->
-                                            <a asp-action="Edit" asp-route-id="@ticket.Id" class="dropdown-item">Edit</a>
-                                            <!-- item-->
-                                            @if (ticket.Archived == false)
-                                            {
-                                                <a class="dropdown-item" asp-action="Delete" asp-route-id="@ticket.Id">Delete</a>
-                                            }
-                                            else
-                                            {
-                                                <a class="dropdown-item" asp-action="Undelete" asp-route-id="@ticket.Id">Undelete</a>
-                                            }
+                                <div class="card">
+                                    <div class="text-center card-body">
+                                        <div class="dropdown float-end">
+                                            <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="mdi mdi-dots-vertical"></i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-end">
+                                                <!-- item-->
+                                                <a asp-action="AssignTicket" asp-route-id="@ticket.Id" class="dropdown-item">Assign</a>
+                                                <!-- item-->
+                                                <a asp-action="Edit" asp-route-id="@ticket.Id" class="dropdown-item">Edit</a>
+                                                <!-- item-->
+                                                @if (ticket.Archived == false)
+                                                {
+                                                    <a class="dropdown-item" asp-action="Delete" asp-route-id="@ticket.Id">Delete</a>
+                                                }
+                                                else
+                                                {
+                                                    <a class="dropdown-item" asp-action="Undelete" asp-route-id="@ticket.Id">Undelete</a>
+                                                }
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div>
-                                        <img src="@_fileService.ConvertByteArrayToFile(ticket.Project.ImageData,ticket.Project.ImageType,DefaultImage.ProjectImage)" class="rounded-circle avatar-xl img-thumbnail mb-2" alt="profile-image">
-                                        <h5>@ticket.Title</h5>
-                                        <p class="text-muted text-truncate d-block font-13 mb-3" style="overflow:hidden;">
-                                            @ticket.Description
-                                        </p>
+                                        <div>
+                                            <img src="@_fileService.ConvertByteArrayToFile(ticket.Project.ImageData,ticket.Project.ImageType,DefaultImage.ProjectImage)" class="rounded-circle avatar-xl img-thumbnail mb-2" alt="profile-image">
+                                            <h5>@ticket.Title</h5>
+                                            <p class="text-muted text-truncate d-block font-13 mb-3" style="overflow:hidden;">
+                                                @ticket.Description
+                                            </p>
 
-                                        <div class="text-start">
-                                            @if (ticket.DeveloperUser == null)
-                                            {
-                                                <p class="text-muted font-13"><strong>Developer Name:</strong> <span class="ms-2">Unassigned</span></p>
-                                            }
-                                            else
-                                            {
-                                                <p class="text-muted font-13"><strong>Developer Name:</strong> <span class="ms-2">@ticket.DeveloperUser.FullName</span></p>
+                                            <div class="text-start">
+                                                @if (ticket.DeveloperUser == null)
+                                                {
+                                                    <p class="text-muted font-13"><strong>Developer Name:</strong> <span class="ms-2">Unassigned</span></p>
+                                                }
+                                                else
+                                                {
+                                                    <p class="text-muted font-13"><strong>Developer Name:</strong> <span class="ms-2">@ticket.DeveloperUser.FullName</span></p>
 
-                                            }
-                                            <p class="text-muted font-13"><strong>Submitter Name:</strong> <span class="ms-2">@ticket.SubmitterUser.FullName</span></p>
+                                                }
+                                                <p class="text-muted font-13"><strong>Submitter Name:</strong> <span class="ms-2">@ticket.SubmitterUser.FullName</span></p>
 
-                                            <p class="text-muted font-13"><strong>Priority:</strong><span class="ms-2">@ticket.TicketPriority.Name</span></p>
+                                                <p class="text-muted font-13"><strong>Priority:</strong><span class="ms-2">@ticket.TicketPriority.Name</span></p>
 
-                                            <p class="text-muted font-13"><strong>Type:</strong> <span class="ms-2">@ticket.TicketType.Name</span></p>
+                                                <p class="text-muted font-13"><strong>Type:</strong> <span class="ms-2">@ticket.TicketType.Name</span></p>
 
-                                            @if (ticket.Archived == true || ticket.ArchivedByProject == true)
-                                            {
-                                                <p class="text-danger font-13 text-center"><strong>Archived</strong></p>
-                                            } else
-                                            {
-                                            <p class="text-muted font-13"><strong>Status:</strong> <span class="ms-2">@ticket.TicketStatus.Name</span></p>
-                                                
-                                            }
+                                                @if (ticket.Archived == true || ticket.ArchivedByProject == true)
+                                                {
+                                                    <p class="text-danger font-13 text-center"><strong>Archived</strong></p>
+                                                }
+                                                else
+                                                {
+                                                    <p class="text-muted font-13"><strong>Status:</strong> <span class="ms-2">@ticket.TicketStatus.Name</span></p>
 
+                                                }
+
+                                            </div>
+
+                                            <a asp-action="Details" asp-route-id="@ticket.Id" class="btn btn-primary rounded-pill waves-effect waves-light">Details</a>
                                         </div>
-
-                                        <a asp-action="Details" asp-route-id="@ticket.Id" class="btn btn-primary rounded-pill waves-effect waves-light">Details</a>
                                     </div>
                                 </div>
-                            </div>
 
-                        </div> <!-- end col -->
+                            </div> <!-- end col -->
+                        }
+                        else if (User.IsInRole("ProjectManager") && (ticket.DeveloperUserId == bTUser?.Id || ticket.SubmitterUserId == bTUser?.Id || pManager.Id == bTUser?.Id))
+                        {
+                            <div class="col-xl-4">
+
+
+                                <div class="card">
+                                    <div class="text-center card-body">
+                                        <div class="dropdown float-end">
+                                            <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="mdi mdi-dots-vertical"></i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-end">
+                                                <!-- item-->
+                                                <a asp-action="AssignTicket" asp-route-id="@ticket.Id" class="dropdown-item">Assign</a>
+                                                <!-- item-->
+                                                <a asp-action="Edit" asp-route-id="@ticket.Id" class="dropdown-item">Edit</a>
+                                                <!-- item-->
+                                                @if (ticket.Archived == false)
+                                                {
+                                                    <a class="dropdown-item" asp-action="Delete" asp-route-id="@ticket.Id">Delete</a>
+                                                }
+                                                else
+                                                {
+                                                    <a class="dropdown-item" asp-action="Undelete" asp-route-id="@ticket.Id">Undelete</a>
+                                                }
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <img src="@_fileService.ConvertByteArrayToFile(ticket.Project.ImageData,ticket.Project.ImageType,DefaultImage.ProjectImage)" class="rounded-circle avatar-xl img-thumbnail mb-2" alt="profile-image">
+                                            <h5>@ticket.Title</h5>
+                                            <p class="text-muted text-truncate d-block font-13 mb-3" style="overflow:hidden;">
+                                                @ticket.Description
+                                            </p>
+
+                                            <div class="text-start">
+                                                @if (ticket.DeveloperUser == null)
+                                                {
+                                                    <p class="text-muted font-13"><strong>Developer Name:</strong> <span class="ms-2">Unassigned</span></p>
+                                                }
+                                                else
+                                                {
+                                                    <p class="text-muted font-13"><strong>Developer Name:</strong> <span class="ms-2">@ticket.DeveloperUser.FullName</span></p>
+
+                                                }
+                                                <p class="text-muted font-13"><strong>Submitter Name:</strong> <span class="ms-2">@ticket.SubmitterUser.FullName</span></p>
+
+                                                <p class="text-muted font-13"><strong>Priority:</strong><span class="ms-2">@ticket.TicketPriority.Name</span></p>
+
+                                                <p class="text-muted font-13"><strong>Type:</strong> <span class="ms-2">@ticket.TicketType.Name</span></p>
+
+                                                @if (ticket.Archived == true || ticket.ArchivedByProject == true)
+                                                {
+                                                    <p class="text-danger font-13 text-center"><strong>Archived</strong></p>
+                                                }
+                                                else
+                                                {
+                                                    <p class="text-muted font-13"><strong>Status:</strong> <span class="ms-2">@ticket.TicketStatus.Name</span></p>
+
+                                                }
+
+                                            </div>
+
+                                            <a asp-action="Details" asp-route-id="@ticket.Id" class="btn btn-primary rounded-pill waves-effect waves-light">Details</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div> <!-- end col -->
+                        }
+                        else if (ticket.DeveloperUserId == bTUser?.Id || ticket.SubmitterUserId == bTUser?.Id)
+                        {
+                            <div class="col-xl-4">
+
+
+                                <div class="card">
+                                    <div class="text-center card-body">
+                                        <div class="dropdown float-end">
+                                            <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="mdi mdi-dots-vertical"></i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-end">
+                                                <!-- item-->
+                                                <a asp-action="Edit" asp-route-id="@ticket.Id" class="dropdown-item">Edit</a>
+                                                <!-- item-->
+                                                @if (ticket.Archived == false)
+                                                {
+                                                    <a class="dropdown-item" asp-action="Delete" asp-route-id="@ticket.Id">Delete</a>
+                                                }
+                                                else
+                                                {
+                                                    <a class="dropdown-item" asp-action="Undelete" asp-route-id="@ticket.Id">Undelete</a>
+                                                }
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <img src="@_fileService.ConvertByteArrayToFile(ticket.Project.ImageData,ticket.Project.ImageType,DefaultImage.ProjectImage)" class="rounded-circle avatar-xl img-thumbnail mb-2" alt="profile-image">
+                                            <h5>@ticket.Title</h5>
+                                            <p class="text-muted text-truncate d-block font-13 mb-3" style="overflow:hidden;">
+                                                @ticket.Description
+                                            </p>
+
+                                            <div class="text-start">
+                                                @if (ticket.DeveloperUser == null)
+                                                {
+                                                    <p class="text-muted font-13"><strong>Developer Name:</strong> <span class="ms-2">Unassigned</span></p>
+                                                }
+                                                else
+                                                {
+                                                    <p class="text-muted font-13"><strong>Developer Name:</strong> <span class="ms-2">@ticket.DeveloperUser.FullName</span></p>
+
+                                                }
+                                                <p class="text-muted font-13"><strong>Submitter Name:</strong> <span class="ms-2">@ticket.SubmitterUser.FullName</span></p>
+
+                                                <p class="text-muted font-13"><strong>Priority:</strong><span class="ms-2">@ticket.TicketPriority.Name</span></p>
+
+                                                <p class="text-muted font-13"><strong>Type:</strong> <span class="ms-2">@ticket.TicketType.Name</span></p>
+
+                                                @if (ticket.Archived == true || ticket.ArchivedByProject == true)
+                                                {
+                                                    <p class="text-danger font-13 text-center"><strong>Archived</strong></p>
+                                                }
+                                                else
+                                                {
+                                                    <p class="text-muted font-13"><strong>Status:</strong> <span class="ms-2">@ticket.TicketStatus.Name</span></p>
+
+                                                }
+
+                                            </div>
+
+                                            <a asp-action="Details" asp-route-id="@ticket.Id" class="btn btn-primary rounded-pill waves-effect waves-light">Details</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div> <!-- end col -->
+                        }
+                    }
+
                     }
                     <div>
                         <div>

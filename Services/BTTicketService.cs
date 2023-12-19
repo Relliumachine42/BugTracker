@@ -19,12 +19,12 @@ namespace BugTracker.Services
             try
             {
 
-                if(ticket != null)
+                if (ticket != null)
                 {
-                ticket!.Created = DateTime.Now;
-                ticket!.TicketStatusId = (await _context.TicketStatuses.FirstOrDefaultAsync(t => t.Name == "New"))!.Id;
-                _context.Add(ticket);
-                await _context.SaveChangesAsync();
+                    ticket!.Created = DateTime.Now;
+                    ticket!.TicketStatusId = (await _context.TicketStatuses.FirstOrDefaultAsync(t => t.Name == "New"))!.Id;
+                    _context.Add(ticket);
+                    await _context.SaveChangesAsync();
                 }
 
                 return;
@@ -41,9 +41,9 @@ namespace BugTracker.Services
         {
             try
             {
-				await _context.AddAsync(ticketAttachment);
-				await _context.SaveChangesAsync();
-			}
+                await _context.AddAsync(ticketAttachment);
+                await _context.SaveChangesAsync();
+            }
             catch (Exception)
             {
 
@@ -71,7 +71,7 @@ namespace BugTracker.Services
 
                     Ticket? ticket = await GetTicketByIdAsync(ticketId, btUser!.CompanyId);
 
-                    if (ticket != null && btUser != null) 
+                    if (ticket != null && btUser != null)
                     {
                         ticket!.DeveloperUserId = userId;
                         // TODO: Set ticket Status to "Development" with LookupService
@@ -180,6 +180,9 @@ namespace BugTracker.Services
                                                     .Include(t => t.DeveloperUser)
                                                     .Include(t => t.History)
                                                     .Include(t => t.SubmitterUser)
+                                                    .Include(t => t.TicketPriority)
+                                                    .Include(t => t.TicketStatus)
+                                                    .Include(t => t.TicketType)
                                                     .FirstOrDefaultAsync(t => t.Id == ticketId);
                 }
                 return ticket!;
