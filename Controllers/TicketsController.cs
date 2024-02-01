@@ -132,7 +132,7 @@ namespace BugTracker.Controllers
         // GET: Tickets/Create
         public async Task<IActionResult> Create()
         {
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Name");
+            ViewData["ProjectId"] = new SelectList((await _projectService.GetAllProjectsByCompanyIdAsync(_companyId)), "Id", "Name");
             ViewData["TicketPriority"] = new SelectList((await _ticketService.GetTicketPrioritiesAsync()), "Id", "Name");
             ViewData["TicketType"] = new SelectList((await _ticketService.GetTicketTypesAsync()), "Id", "Name");
             
