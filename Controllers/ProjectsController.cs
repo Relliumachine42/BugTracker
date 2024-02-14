@@ -307,8 +307,6 @@ namespace BugTracker.Controllers
                 return NotFound();
             }
 
-            ModelState.Remove("Slug");
-
             if (ModelState.IsValid)
             {
                 try
