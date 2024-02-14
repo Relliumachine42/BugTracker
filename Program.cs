@@ -86,6 +86,18 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllerRoute(
+    name: "project",
+    pattern: "Project/{slug}",
+    defaults: new { controller = "Projects", action = "Details" }
+    );
+
+app.MapControllerRoute(
+    name: "ticket",
+    pattern: "Ticket/{slug}",
+    defaults: new { controller = "Tickets", action = "Details" }
+    );
+
+app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Landing}/{id?}");
 app.MapRazorPages();

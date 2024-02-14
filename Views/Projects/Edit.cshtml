@@ -19,6 +19,7 @@
                 <input type="hidden" asp-for="CompanyId" />
                 <input type="hidden" asp-for="ImageData" />
                 <input type="hidden" asp-for="ImageType" />
+                <input type="hidden" asp-for="Slug" />
 
                 <div class="square-img-container text-center">
                     <img id="contactImage" class="square-img avatar-xl rounded mb-2" src="@_fileService.ConvertByteArrayToFile(Model?.ImageData, Model?.ImageType, DefaultImage.ProjectImage)">

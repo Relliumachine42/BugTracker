@@ -16,6 +16,7 @@ using X.PagedList;
 using BugTracker.Models.Enums;
 using BugTracker.Models.ViewModels;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using BugTracker.Helpers;
 
 namespace BugTracker.Controllers
 {
@@ -194,18 +195,18 @@ namespace BugTracker.Controllers
 
 
         // GET: Projects/Details/5
-        public async Task<IActionResult> Details(int? Id)
+        public async Task<IActionResult> Details(string? slug)
         {
-            if (Id == null)
+            if (string.IsNullOrEmpty(slug))
             {
                 return NotFound();
             }
 
-            Project? project = await _projectService.GetProjectByIdAsync(Id, _companyId);
+            Project? project = await _projectService.GetProjectAsync(slug, _companyId);
 
             if (project == null)
             {
-                return NotFound($"No project found with Id {Id}");
+                return NotFound($"No project found with Name {slug}");
             }
 
             return View(project);
@@ -239,9 +240,21 @@ namespace BugTracker.Controllers
         public async Task<IActionResult> Create([Bind("Name,Description,StartDate,EndDate,ProjectPriorityId,Archived,ImageFile")] Project project)
         {
             ModelState.Remove("CompanyId");
+            ModelState.Remove("Slug");
 
             if (ModelState.IsValid)
             {
+                string? newSlug = StringHelper.BTSlug(project.Name);
+
+                if(!await _projectService.ValidSlugAsync(newSlug, project.Id))
+                {
+                    ModelState.AddModelError("Name", "A similar Name is already in use.");
+
+                    ViewData["ProjectPriority"] = new SelectList((await _projectService.GetProjectPrioritiesAsync()), "Id", "Name");
+                    return View(project);
+                }
+
+                project.Slug = newSlug;
                 project.CompanyId = _companyId;
                 project.Created = DateTime.Now;
 
@@ -287,25 +300,43 @@ namespace BugTracker.Controllers
         [Authorize(Roles = "Admin, ProjectManager")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,CompanyId,Name,Description,Created,StartDate,EndDate,ProjectPriorityId,Archived,ImageData,ImageType,ImageFile")] Project project)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Slug,CompanyId,Name,Description,Created,StartDate,EndDate,ProjectPriorityId,Archived,ImageData,ImageType,ImageFile")] Project project)
         {
             if (id != project.Id)
             {
                 return NotFound();
             }
 
+            ModelState.Remove("Slug");
+
             if (ModelState.IsValid)
             {
                 try
                 {
+                    string? newSlug = StringHelper.BTSlug(project.Name);
+
+                    if (newSlug != project.Slug)
+                    {
+                        if (!await _projectService.ValidSlugAsync(newSlug, project.Id))
+                        {
+                            ModelState.AddModelError("Name", "A similar Name/Slug is already in use.");
+
+                            ViewData["ProjectPriorityId"] = new SelectList(_context.ProjectPriorities, "Id", "Id", project.ProjectPriorityId);
+                            return View(project);
+                        }
+
+                        project.Slug = newSlug;
+                    }
+
+
                     if (project.ImageFile != null)
                     {
                         project.ImageData = await _fileService.ConvertFileToByteArrayAsync(project.ImageFile);
                         project.ImageType = project.ImageFile.ContentType;
                     }
 
-                    _context.Update(project);
-                    await _context.SaveChangesAsync();
+                    await _projectService.UpdateProjectAsync(project);
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -320,7 +351,7 @@ namespace BugTracker.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name", project.CompanyId);
+            ModelState.AddModelError("Name", "ModelState is invalid.");
             ViewData["ProjectPriorityId"] = new SelectList(_context.ProjectPriorities, "Id", "Id", project.ProjectPriorityId);
             return View(project);
         }

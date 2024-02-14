@@ -40,28 +40,29 @@
                                     <div class="col-md-4">
                                         @if (User.IsInRole("Admin") || User.IsInRole("ProjectManager"))
                                         {
-                                        <div class="mt-3 mt-md-0">
-                                            <a class="btn btn-success waves-effect waves-light" asp-controller="Projects" asp-action="Create"><i class="mdi mdi-plus-circle me-1"></i> Add project</a>
-                                        </div>
+                                            <div class="mt-3 mt-md-0">
+                                                <a class="btn btn-success waves-effect waves-light" asp-controller="Projects" asp-action="Create"><i class="mdi mdi-plus-circle me-1"></i> Add project</a>
+                                            </div>
                                         }
 
                                     </div><!-- end col-->
                                     <div class="col-md-8">
-@*                                         <form class="d-flex flex-wrap align-items-center justify-content-sm-end">
-                                            <label for="status-select" class="me-2">Sort By</label>
-                                            <div class="me-sm-2">
-                                                <select class="form-select my-1 my-md-0" id="status-select">
-                                                    <option selected="">All</option>
-                                                    <option value="1">Name</option>
-                                                    <option value="2">Post</option>
-                                                    <option value="3">Followers</option>
-                                                    <option value="4">Followings</option>
-                                                </select>
-                                            </div>
-                                            <label for="inputPassword2" class="visually-hidden">Search</label>
-                                            <div>
-                                                <input type="search" class="form-control my-1 my-md-0" id="inputPassword2" placeholder="Search...">
-                                            </div>
+                                        
+                                        @*                                         <form class="d-flex flex-wrap align-items-center justify-content-sm-end">
+                                        <label for="status-select" class="me-2">Sort By</label>
+                                        <div class="me-sm-2">
+                                        <select class="form-select my-1 my-md-0" id="status-select">
+                                        <option selected="">All</option>
+                                        <option value="1">Name</option>
+                                        <option value="2">Post</option>
+                                        <option value="3">Followers</option>
+                                        <option value="4">Followings</option>
+                                        </select>
+                                        </div>
+                                        <label for="inputPassword2" class="visually-hidden">Search</label>
+                                        <div>
+                                        <input type="search" class="form-control my-1 my-md-0" id="inputPassword2" placeholder="Search...">
+                                        </div>
                                         </form> *@
                                     </div>
                                 </div> <!-- end row -->
@@ -138,69 +139,70 @@
                                                 }
                                             </div>
 
-                                            <a asp-action="Details" asp-route-id="@project.Id" class="btn btn-primary rounded-pill waves-effect waves-light">Details</a>
+                                            <a asp-action="Details" asp-controller="Projects" asp-route-slug="@project.Slug" class="btn btn-primary rounded-pill waves-effect waves-light">Details</a>
                                         </div>
                                     </div>
                                 </div>
 
                             </div> <!-- end col -->
-                        } else if (User.IsInRole("Developer") || User.IsInRole("Submitter"))
+                        }
+                        else if (User.IsInRole("Developer") || User.IsInRole("Submitter"))
                         {
                             if (project.Members.Any(member => member.Id == bTUser?.Id))
                             {
-                            <div class="col-xl-4">
-                                <div class="card">
-                                    <div class="text-center card-body">
-                                        <div>
-                                            <img src="@_fileService.ConvertByteArrayToFile(project.ImageData,project.ImageType,DefaultImage.ProjectImage)" class="rounded-circle avatar-xl img-thumbnail mb-2" alt="profile-image">
+                                <div class="col-xl-4">
+                                    <div class="card">
+                                        <div class="text-center card-body">
+                                            <div>
+                                                <img src="@_fileService.ConvertByteArrayToFile(project.ImageData,project.ImageType,DefaultImage.ProjectImage)" class="rounded-circle avatar-xl img-thumbnail mb-2" alt="profile-image">
 
-                                            <p class="font-14 text-center"><strong>@project.Name</strong></p>
+                                                <p class="font-14 text-center"><strong>@project.Name</strong></p>
 
-                                            <p class="text-muted text-truncate d-block font-13 mb-3" style="overflow:hidden;">
-                                                @project.Description
-                                            </p>
+                                                <p class="text-muted text-truncate d-block font-13 mb-3" style="overflow:hidden;">
+                                                    @project.Description
+                                                </p>
 
-                                            <div class="text-start">
+                                                <div class="text-start">
 
-                                                <p class="text-muted font-13"><strong>Priority:</strong><span class="ms-2">@project.ProjectPriority.Name</span></p>
-
-
-
-                                                @if (await _projectService.GetProjectManagerAsync(project.Id) == null)
-                                                {
-                                                    <p class="text-muted font-13"><strong>Manager:</strong> <span class="ms-2">Not Assigned</span></p>
-                                                }
-                                                else
-                                                {
-                                                    <p class="text-muted font-13"><strong>Manager:</strong> <span class="ms-2">@pManager.FullName</span></p>
-                                                }
+                                                    <p class="text-muted font-13"><strong>Priority:</strong><span class="ms-2">@project.ProjectPriority.Name</span></p>
 
 
-                                                @if (project.Archived == true)
-                                                {
-                                                    <p class="text-danger font-13 text-center"><strong>Archived</strong></p>
-                                                }
+
+                                                    @if (await _projectService.GetProjectManagerAsync(project.Id) == null)
+                                                    {
+                                                        <p class="text-muted font-13"><strong>Manager:</strong> <span class="ms-2">Not Assigned</span></p>
+                                                    }
+                                                    else
+                                                    {
+                                                        <p class="text-muted font-13"><strong>Manager:</strong> <span class="ms-2">@pManager.FullName</span></p>
+                                                    }
+
+
+                                                    @if (project.Archived == true)
+                                                    {
+                                                        <p class="text-danger font-13 text-center"><strong>Archived</strong></p>
+                                                    }
+                                                </div>
+
+                                                <a asp-action="Details" asp-controller="Projects" asp-route-slug="@project.Slug" class="btn btn-primary rounded-pill waves-effect waves-light">Details</a>
                                             </div>
-
-                                            <a asp-action="Details" asp-route-id="@project.Id" class="btn btn-primary rounded-pill waves-effect waves-light">Details</a>
                                         </div>
                                     </div>
-                                </div>
 
-                            </div> <!-- end col -->                                
+                                </div> <!-- end col -->
                             }
-                        } 
+                        }
 
                     }
                     <div>
                         <div>
                             Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
                         </div>
-                        @Html.PagedListPager(Model, pageNum => Url.Action(actionName, new { pageNum, searchString, category}),
-                        new PagedListRenderOptions
+                        @Html.PagedListPager(Model, pageNum => Url.Action(actionName, new { pageNum, searchString, category }),
+                                 new PagedListRenderOptions
                         {
-                        LiElementClasses = new string[] {"my-page-item"},
-                        PageClasses = new string[] {"my-page-link" }
+                            LiElementClasses = new string[] { "my-page-item" },
+                            PageClasses = new string[] { "my-page-link" }
                         })
 
                     </div>
@@ -231,10 +233,3 @@
     <script src="assets/js/app.min.js"></script>
 
 </body>
-
-
-@*         @foreach (Project project in Model)
-        {
-            <partial name="_ProjectPartial" model="project" />
-        } *@
-

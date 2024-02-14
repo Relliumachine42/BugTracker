@@ -13,6 +13,8 @@ namespace BugTracker.Services.Interfaces
         public Task<List<Project>> GetAllProjectsByCompanyIdAsync(int? companyId);
         public Task<List<Project>> GetArchivedProjectsByCompanyIdAsync(int? companyId);
         public Task<Project> GetProjectByIdAsync(int? projectId, int? companyId);
+        public Task<Project> GetProjectAsync(string? slug, int? companyId);
+
         public Task<BTUser> GetProjectManagerAsync(int? projectId);
         public Task<List<BTUser>> GetProjectMembersByRoleAsync(int? projectId, string? roleName, int? companyId);
 
@@ -25,5 +27,7 @@ namespace BugTracker.Services.Interfaces
         public Task RestoreProjectAsync(Project? project, int? companyId);
         public Task UpdateProjectAsync(Project? project);
         public IEnumerable<Project> SearchProjects(string? searchString);
+        public Task<bool> ValidSlugAsync(string? title, int? projectId);
+
     }
 }

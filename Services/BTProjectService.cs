@@ -209,6 +209,49 @@ namespace BugTracker.Services
                 throw;
             }
         }
+        public async Task<Project> GetProjectAsync(string? slug, int? companyId)
+        {
+            try
+            {
+                Project? project = new();
+
+                if (!string.IsNullOrEmpty(slug) && companyId != null)
+                {
+
+
+                    project = await _context.Projects
+                           .Include(p => p.ProjectPriority)
+                           .Include(p => p.Company)
+                           .Include(p => p.Tickets)
+                                .ThenInclude(t => t.Comments)
+                                      .ThenInclude(c => c.User)
+                           .Include(p => p.Tickets)
+                                 .ThenInclude(t => t.History)
+                           .Include(p => p.Tickets)
+                                 .ThenInclude(t => t.Attachments)
+                           .Include(p => p.Tickets)
+                                 .ThenInclude(t => t.TicketPriority)
+                           .Include(p => p.Tickets)
+                                 .ThenInclude(t => t.TicketType)
+                           .Include(p => p.Tickets)
+                                 .ThenInclude(t => t.TicketStatus)
+                           .Include(p => p.Tickets)
+                                 .ThenInclude(t => t.SubmitterUser)
+                           .Include(p => p.Tickets)
+                                 .ThenInclude(t => t.DeveloperUser)
+                           .Include(p => p.Members)
+                           .Where(p => p.Company!.Id == companyId)
+                           .FirstOrDefaultAsync(m => m.Slug == slug);
+                }
+
+                return project!;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
 
         public async Task<BTUser> GetProjectManagerAsync(int? projectId)
         {
@@ -430,6 +473,34 @@ namespace BugTracker.Services
 
         }
 
+        public async Task<bool> ValidSlugAsync(string? title, int? projectId)
+        {
+            try
+            {
+                if (projectId == null || projectId == 0)
+                {
+                    return !await _context.Projects.AnyAsync(p => p.Slug == title);
+                }
+                else
+                {
+                    Project? project = await _context.Projects.AsNoTracking().FirstOrDefaultAsync(p => p.Id == projectId);
+
+                    string? oldSlug = project?.Slug;
+
+                    if (!string.Equals(oldSlug, title))
+                    {
+                        return !await _context.Projects.AnyAsync(p => p.Id != project!.Id && p.Slug == title);
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
 
     }
 }

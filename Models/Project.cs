@@ -34,6 +34,9 @@ namespace BugTracker.Models
         public int ProjectPriorityId { get; set; }
         public bool Archived { get; set; }
 
+        [Required]
+        public string? Slug { get; set; }
+
         //Image Properites
         public byte[]? ImageData { get; set; }
         public string? ImageType { get; set; }
